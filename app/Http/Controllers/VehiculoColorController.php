@@ -75,52 +75,38 @@ class VehiculoColorController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->color = '1';
-            }
-            if ($bandera == 2) {
-                $data->colorcreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->coloredit = '1';
-            }
-            if ($bandera == 4) {
-                $data->colorshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->color = ( $data->color == null ) ? '1' : $data->color * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->colorcreate = ( $data->colorcreate == null ) ? '1' : $data->colorcreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->coloredit = ( $data->coloredit == null ) ? '1' : $data->coloredit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->colorshow = ( $data->colorshow == null ) ? '1' : $data->colorshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE COLOR: ' . $data->color;
+            $data->color = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO COLOR: ' . $data->colorcreate;
+            $data->colorcreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR COLOR: ' . $data->coloredit;
+            $data->coloredit = '1';
         }
-        return ' DETALLE COLOR: ' . $data->colorshow;
+        if ($bandera == 4) {
+            $data->colorshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('color')->get() );
+            return ' LISTADO DE COLOR: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('colorcreate')->get() );
+            return ' NUEVO COLOR: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('coloredit')->get() );
+            return ' EDITAR COLOR: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('colorshow')->get() );
+        return ' DETALLE COLOR: ' . $cantidad;
     }
 
     /**

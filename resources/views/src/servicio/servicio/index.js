@@ -389,7 +389,7 @@ class IndexServicio extends Component {
                                     </div>
                                 </div>
                             </TabPane>
-                            <TabPane style={{width: '100%', maxWidth: '100%'}} tab="ARTICULO" key="3">
+                            <TabPane style={{width: '100%', maxWidth: '100%'}} tab="PARTE VEHICULO" key="3">
                                 <div className="forms-groups">
                                     <div className="tabless">
                                         <table className="tables-respons">

@@ -79,52 +79,38 @@ class ClienteController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->cliente = '1';
-            }
-            if ($bandera == 2) {
-                $data->clientecreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->clienteedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->clienteshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->cliente = ( $data->cliente == null ) ? '1' : $data->cliente * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->clientecreate = ( $data->clientecreate == null ) ? '1' : $data->clientecreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->clienteedit = ( $data->clienteedit == null ) ? '1' : $data->clienteedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->clienteshow = ( $data->clienteshow == null ) ? '1' : $data->clienteshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE CLIENTE: ' . $data->cliente;
+            $data->cliente = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO CLIENTE: ' . $data->clientecreate;
+            $data->clientecreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR CLIENTE: ' . $data->clienteedit;
+            $data->clienteedit = '1';
         }
-        return ' DETALLE CLIENTE: ' . $data->clienteshow;
+        if ($bandera == 4) {
+            $data->clienteshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('cliente')->get() );
+            return ' LISTADO DE CLIENTE: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('clientecreate')->get() );
+            return ' NUEVO CLIENTE: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('clienteedit')->get() );
+            return ' EDITAR CLIENTE: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('clienteshow')->get() );
+        return ' DETALLE CLIENTE: ' . $cantidad;
     }
 
     public function search_name(Request $request)

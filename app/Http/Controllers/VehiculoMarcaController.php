@@ -75,52 +75,38 @@ class VehiculoMarcaController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->marca = '1';
-            }
-            if ($bandera == 2) {
-                $data->marcacreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->marcaedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->marcashow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->marca = ( $data->marca == null ) ? '1' : $data->marca * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->marcacreate = ( $data->marcacreate == null ) ? '1' : $data->marcacreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->marcaedit = ( $data->marcaedit == null ) ? '1' : $data->marcaedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->marcashow = ( $data->marcashow == null ) ? '1' : $data->marcashow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE MARCA: ' . $data->marca;
+            $data->marca = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVA MARCA: ' . $data->marcacreate;
+            $data->marcacreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR MARCA: ' . $data->marcaedit;
+            $data->marcaedit = '1';
         }
-        return ' DETALLE MARCA: ' . $data->marcashow;
+        if ($bandera == 4) {
+            $data->marcashow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('marca')->get() );
+            return ' LISTADO DE MARCA: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('marcacreate')->get() );
+            return ' NUEVA MARCA: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('marcaedit')->get() );
+            return ' EDITAR MARCA: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('marcashow')->get() );
+        return ' DETALLE MARCA: ' . $cantidad;
     }
 
     /**

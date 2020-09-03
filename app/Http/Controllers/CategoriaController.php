@@ -66,52 +66,38 @@ class CategoriaController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->categoria = '1';
-            }
-            if ($bandera == 2) {
-                $data->categoriacreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->categoriaedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->categoriashow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->categoria = ( $data->categoria == null ) ? '1' : $data->categoria * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->categoriacreate = ( $data->categoriacreate == null ) ? '1' : $data->categoriacreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->categoriaedit = ( $data->categoriaedit == null ) ? '1' : $data->categoriaedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->categoriashow = ( $data->categoriashow == null ) ? '1' : $data->categoriashow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE CATEGORIA: ' . $data->categoria;
+            $data->categoria = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVA CATEGORIA: ' . $data->categoriacreate;
+            $data->categoriacreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR CATEGORIA: ' . $data->categoriaedit;
+            $data->categoriaedit = '1';
         }
-        return ' DETALLE CATEGORIA: ' . $data->categoriashow;
+        if ($bandera == 4) {
+            $data->categoriashow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('categoria')->get() );
+            return ' LISTADO DE CATEGORIA: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('categoriacreate')->get() );
+            return ' NUEVA CATEGORIA: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('categoriaedit')->get() );
+            return ' EDITAR CATEGORIA: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('categoriashow')->get() );
+        return ' DETALLE CATEGORIA: ' . $cantidad;
     }
 
     /**

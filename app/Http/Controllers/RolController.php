@@ -79,52 +79,38 @@ class RolController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->grupousuario = '1';
-            }
-            if ($bandera == 2) {
-                $data->grupousuariocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->grupousuarioedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->grupousuarioshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->grupousuario = ( $data->grupousuario == null ) ? '1' : $data->grupousuario * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->grupousuariocreate = ( $data->grupousuariocreate == null ) ? '1' : $data->grupousuariocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->grupousuarioedit = ( $data->grupousuarioedit == null ) ? '1' : $data->grupousuarioedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->grupousuarioshow = ( $data->grupousuarioshow == null ) ? '1' : $data->grupousuarioshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE ROL: ' . $data->grupousuario;
+            $data->grupousuario = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO ROL: ' . $data->grupousuariocreate;
+            $data->grupousuariocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR ROL: ' . $data->grupousuarioedit;
+            $data->grupousuarioedit = '1';
         }
-        return ' DETALLE ROL: ' . $data->grupousuarioshow;
+        if ($bandera == 4) {
+            $data->grupousuarioshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('grupousuario')->get() );
+            return ' LISTADO DE ROL: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('grupousuariocreate')->get() );
+            return ' NUEVO ROL: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('grupousuarioedit')->get() );
+            return ' EDITAR ROL: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('grupousuarioshow')->get() );
+        return ' DETALLE ROL: ' . $cantidad;
     }
 
     /**

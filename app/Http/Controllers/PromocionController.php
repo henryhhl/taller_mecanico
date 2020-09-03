@@ -74,52 +74,38 @@ class PromocionController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->promocion = '1';
-            }
-            if ($bandera == 2) {
-                $data->promocioncreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->promocionedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->promocionshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->promocion = ( $data->promocion == null ) ? '1' : $data->promocion * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->promocioncreate = ( $data->promocioncreate == null ) ? '1' : $data->promocioncreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->promocionedit = ( $data->promocionedit == null ) ? '1' : $data->promocionedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->promocionshow = ( $data->promocionshow == null ) ? '1' : $data->promocionshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE PROMOCION: ' . $data->promocion;
+            $data->promocion = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVA PROMOCION: ' . $data->promocioncreate;
+            $data->promocioncreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR PROMOCION: ' . $data->promocionedit;
+            $data->promocionedit = '1';
         }
-        return ' DETALLE PROMOCION: ' . $data->promocionshow;
+        if ($bandera == 4) {
+            $data->promocionshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('promocion')->get() );
+            return ' LISTADO DE PROMOCION: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('promocioncreate')->get() );
+            return ' NUEVA PROMOCION: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('promocionedit')->get() );
+            return ' EDITAR PROMOCION: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('promocionshow')->get() );
+        return ' DETALLE PROMOCION: ' . $cantidad;
     }
 
     /**

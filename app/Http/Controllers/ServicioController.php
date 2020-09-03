@@ -77,52 +77,38 @@ class ServicioController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->producto = '1';
-            }
-            if ($bandera == 2) {
-                $data->productocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->productoedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->productoshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->producto = ( $data->producto == null ) ? '1' : $data->producto * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->productocreate = ( $data->productocreate == null ) ? '1' : $data->productocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->productoedit = ( $data->productoedit == null ) ? '1' : $data->productoedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->productoshow = ( $data->productoshow == null ) ? '1' : $data->productoshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE SERVICIO: ' . $data->producto;
+            $data->producto = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO SERVICIO: ' . $data->productocreate;
+            $data->productocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR SERVICIO: ' . $data->productoedit;
+            $data->productoedit = '1';
         }
-        return ' DETALLE SERVICIO: ' . $data->productoshow;
+        if ($bandera == 4) {
+            $data->productoshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('producto')->get() );
+            return ' LISTADO DE SERVICIO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('productocreate')->get() );
+            return ' NUEVO SERVICIO: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('productoedit')->get() );
+            return ' EDITAR SERVICIO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('productoshow')->get() );
+        return ' DETALLE SERVICIO: ' . $cantidad;
     }
 
 
@@ -390,7 +376,7 @@ class ServicioController extends Controller
             $data->stockmin = $stockmin;
             $data->stockmax = $stockmax;
             $data->nota = $nota;
-            $data->imagen = $rutadelarchivo;
+            $data->imagen = $request->input('foto');
             $data->estado = 'A';
             $data->fecha = $mytime->toDateString();
             $data->hora = $mytime->toTimeString();
@@ -581,7 +567,7 @@ class ServicioController extends Controller
             $data->stockmax = $stockmax;
             $data->nota = $nota;
             if ($bandera == 1) {
-                $data->imagen = $rutadelarchivo;
+                $data->imagen = $request->input('foto');
             }
             $data->update();
 

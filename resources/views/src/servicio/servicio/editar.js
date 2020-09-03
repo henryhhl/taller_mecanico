@@ -64,6 +64,7 @@ class EditarServicio extends Component {
 
             imagen: '',
             foto: '',
+            deleteimg: false,
             bandera: 0,
             tipoproducto: false,
             tiposervicio: true,
@@ -406,6 +407,7 @@ class EditarServicio extends Component {
         formdata.append('precio', this.state.precio);
         formdata.append('nota', this.state.nota);
         formdata.append('imagen', this.state.imagen);
+        formdata.append('foto', this.state.foto);
         formdata.append('bandera', this.state.bandera);
         formdata.append('id', this.props.match.params.id);
 
@@ -468,17 +470,45 @@ class EditarServicio extends Component {
     }
     onChangeFoto(event) {
         let files = event.target.files;
-        if ((files[0].type === 'image/png') || (files[0].type === 'image/jpg') || (files[0].type === 'image/jpeg')) {
+        console.log(files)
+        if ((files[0].type === 'image/png') || (files[0].type === 'image/jpg') || (files[0].type === 'image/jpeg') || (files[0].type === 'image/bmp')) {
 
             let reader = new FileReader();
             reader.onload = (e) => {
+                console.log(e)
                 this.setState({
                     foto: e.target.result,
                     imagen: files[0],
+                    deleteimg: true,
+                    bandera: 1,
                 });
             };
             reader.readAsDataURL(event.target.files[0]);
+            return;
         }
+        setTimeout(() => {
+            var img = document.getElementById('img-img');
+            img.value = '';
+            notification.error({
+                message: 'Advertencia',
+                description: 'Imagen invalida..',
+            });
+            this.setState({
+                deleteimg: false,
+                foto: '',
+                imagen: '',
+            });
+        }, 500);
+        return;
+    }
+    onDeleteImg() {
+        var img = document.getElementById('img-img');
+        img.value = '';
+        this.setState({
+            deleteimg: false,
+            foto: '',
+            imagen: '',
+        });
     }
     onModalCategoria() {
         var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
@@ -1045,6 +1075,34 @@ class EditarServicio extends Component {
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{marginTop: 0,}}>
+                                        <div className='cols-lg-2 cols-md-2 cols-sm-2'></div>
+                                        <div className='cols-lg-8 cols-md-8 cols-sm-8 cols-xs-12' style={{padding: 0}}>
+                                            <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12' style={{paddingTop: 0,}}>
+                                                <div className='inputs-groups'>
+                                                    <input type='text' readOnly
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Imagen'}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className='cols-lg-8 cols-md-8 cols-sm-12 cols-xs-12' style={{paddingTop: 0,}}>
+                                                <div className='inputs-groups'>
+                                                    <input type='file' placeholder='' id='img-img'
+                                                        style={{ textAlign: 'left', paddingLeft: 10, paddingTop: 10, paddingRight: 10, }}
+                                                        className={`forms-control`}
+                                                        onChange={this.onChangeFoto.bind(this)}
+                                                    />
+                                                    {!this.state.deleteimg ? null : 
+                                                        <i className='fa fa-close delete_icon'
+                                                            onClick={this.onDeleteImg.bind(this)}
+                                                        ></i> 
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{marginTop: -10, padding: 0,}}>
                                         <div className='cols-lg-4 cols-md-4 cols-sm-4'></div>
                                         <div className='cols-lg-4 cols-md-4 cols-sm-4 cols-xs-12'>

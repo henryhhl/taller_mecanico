@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DetalleVenta;
 use App\Venta;
 use App\Visitas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -100,41 +101,32 @@ class VentaController extends Controller
 
         $mensaje = '';
 
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->mantenimiento = '1';
-            }
-            if ($bandera == 2) {
-                $data->mantenimientocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->mantenimientoshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->mantenimiento = ( $data->mantenimiento == null ) ? '1' : $data->mantenimiento * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->mantenimientocreate = ( $data->mantenimientocreate == null ) ? '1' : $data->mantenimientocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->mantenimientoshow = ( $data->mantenimientoshow == null ) ? '1' : $data->mantenimientoshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE MATENIMIENTO: ' . $data->mantenimiento;
+            $data->mantenimiento = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO MANTENIMIENTO: ' . $data->mantenimientocreate;
+            $data->mantenimientocreate = '1';
         }
-        return ' DETALLE MANTENIMIENTO: ' . $data->mantenimientoshow;
+        if ($bandera == 3) {
+            $data->mantenimientoshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('mantenimiento')->get() );
+            return ' LISTADO DE MATENIMIENTO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('mantenimientocreate')->get() );
+            return ' NUEVO MANTENIMIENTO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('mantenimientoshow')->get() );
+        return ' DETALLE MANTENIMIENTO: ' . $cantidad;
     }
 
     /**

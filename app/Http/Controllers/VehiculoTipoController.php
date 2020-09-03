@@ -68,52 +68,38 @@ class VehiculoTipoController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->vehiculotipo = '1';
-            }
-            if ($bandera == 2) {
-                $data->vehiculotipocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->vehiculotipoedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->vehiculotiposhow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->vehiculotipo = ( $data->vehiculotipo == null ) ? '1' : $data->vehiculotipo * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->vehiculotipocreate = ( $data->vehiculotipocreate == null ) ? '1' : $data->vehiculotipocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->vehiculotipoedit = ( $data->vehiculotipoedit == null ) ? '1' : $data->vehiculotipoedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->vehiculotiposhow = ( $data->vehiculotiposhow == null ) ? '1' : $data->vehiculotiposhow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE VEHICULO TIPO: ' . $data->vehiculotipo;
+            $data->vehiculotipo = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO VEHICULO TIPO: ' . $data->vehiculotipocreate;
+            $data->vehiculotipocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR VEHICULO TIPO: ' . $data->vehiculotipoedit;
+            $data->vehiculotipoedit = '1';
         }
-        return ' DETALLE VEHICULO TIPO: ' . $data->vehiculotiposhow;
+        if ($bandera == 4) {
+            $data->vehiculotiposhow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculotipo')->get() );
+            return ' LISTADO DE VEHICULO TIPO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculotipocreate')->get() );
+            return ' NUEVO VEHICULO TIPO: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculotipoedit')->get() );
+            return ' EDITAR VEHICULO TIPO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculotiposhow')->get() );
+        return ' DETALLE VEHICULO TIPO: ' . $cantidad;
     }
 
     /**

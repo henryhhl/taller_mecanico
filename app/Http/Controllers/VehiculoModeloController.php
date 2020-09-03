@@ -74,52 +74,39 @@ class VehiculoModeloController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->modelo = '1';
-            }
-            if ($bandera == 2) {
-                $data->modelocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->modeloedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->modeloshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->modelo = ( $data->modelo == null ) ? '1' : $data->modelo * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->modelocreate = ( $data->modelocreate == null ) ? '1' : $data->modelocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->modeloedit = ( $data->modeloedit == null ) ? '1' : $data->modeloedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->modeloshow = ( $data->modeloshow == null ) ? '1' : $data->modeloshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE MODELO MARCA: ' . $data->modelo;
+            $data->modelo = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO MODELO MARCA: ' . $data->modelocreate;
+            $data->modelocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR MODELO MARCA: ' . $data->modeloedit;
+            $data->modeloedit = '1';
         }
-        return ' DETALLE MODELO MARCA: ' . $data->modeloshow;
+        if ($bandera == 4) {
+            $data->modeloshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('modelo')->get() );
+            return ' LISTADO DE MODELO MARCA: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('modelocreate')->get() );
+            return ' NUEVO MODELO MARCA: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('modeloedit')->get() );
+            return ' EDITAR MODELO MARCA: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('modeloshow')->get() );
+        return ' DETALLE MODELO MARCA: ' . $cantidad;
     }
 
     /**

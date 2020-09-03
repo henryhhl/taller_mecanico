@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Detalle_Permiso;
 use App\Visitas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -72,25 +73,16 @@ class PermisoController extends Controller
 
     public function getvisitasitio() {
 
-        $mensaje = '';
+        $data = new Visitas();
+        
+        $data->asignarpermiso = '1';
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
 
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            
-            $data->asignarpermiso = '1';
-            
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            
-            $data->asignarpermiso = ( $data->asignarpermiso == null ) ? '1' : $data->asignarpermiso * 1 + 1;
-            
-            $data->update();
-        }
-
-        return ' ASIGNAR PERMISO: ' . $data->asignarpermiso;
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('asignarpermiso')->get() );
+        return ' ASIGNAR PERMISO: ' . $cantidad;
     }
 
     /**

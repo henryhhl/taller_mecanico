@@ -7,6 +7,7 @@ use App\Detalle_Rol;
 use App\Rol;
 use App\User;
 use App\Visitas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -189,59 +190,47 @@ class UsuarioController extends Controller
 
         $mensaje = '';
 
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->usuario = '1';
-            }
-            if ($bandera == 2) {
-                $data->usuariocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->usuarioedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->usuarioshow = '1';
-            }
-            if ($bandera == 5) {
-                $data->perfil = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->usuario = ( $data->usuario == null ) ? '1' : $data->usuario * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->usuariocreate = ( $data->usuariocreate == null ) ? '1' : $data->usuariocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->usuarioedit = ( $data->usuarioedit == null ) ? '1' : $data->usuarioedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->usuarioshow = ( $data->usuarioshow == null ) ? '1' : $data->usuarioshow * 1 + 1;
-            }
-            if ($bandera == 5) {
-                $data->perfil = ( $data->perfil == null ) ? '1' : $data->perfil * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE USUARIO: ' . $data->usuario;
+            $data->usuario = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO USUARIO: ' . $data->usuariocreate;
+            $data->usuariocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR USUARIO: ' . $data->usuarioedit;
+            $data->usuarioedit = '1';
+        }
+        if ($bandera == 4) {
+            $data->usuarioshow = '1';
+        }
+        if ($bandera == 5) {
+            $data->perfil = '1';
+        }
+
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('usuario')->get() );
+            return ' LISTADO DE USUARIO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('usuariocreate')->whereNotNull('usuario')->get() );
+            return ' NUEVO USUARIO: ' . $cantidad;
         }
         if ($bandera == 3) {
-            return ' DETALLE USUARIO: ' . $data->usuarioshow;
+            $cantidad = sizeof( DB::table('usuarioedit')->whereNotNull('usuario')->get() );
+            return ' EDITAR USUARIO: ' . $cantidad;
         }
-        return ' PERFIL: ' . $data->usuarioshow;
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('usuarioshow')->whereNotNull('usuario')->get() );
+            return ' DETALLE USUARIO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('perfil')->whereNotNull('usuario')->get() );
+        return ' PERFIL: ' . $cantidad;
     }
 
     /**

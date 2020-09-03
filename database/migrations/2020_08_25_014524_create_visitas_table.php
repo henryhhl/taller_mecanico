@@ -91,6 +91,10 @@ class CreateVisitasTable extends Migration
             $table->text('ajuste')->nullable();
             $table->text('perfil')->nullable();
 
+            $table->text('totalvisita')->nullable();
+            $table->date('fecha')->nullable();
+            $table->time('hora')->nullable();
+
             $table->timestamps();
         });
     }

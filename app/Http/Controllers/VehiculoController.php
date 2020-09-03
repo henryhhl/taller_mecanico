@@ -271,52 +271,38 @@ class VehiculoController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->vehiculo = '1';
-            }
-            if ($bandera == 2) {
-                $data->vehiculocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->vehiculoedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->vehiculoshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->vehiculo = ( $data->vehiculo == null ) ? '1' : $data->vehiculo * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->vehiculocreate = ( $data->vehiculocreate == null ) ? '1' : $data->vehiculocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->vehiculoedit = ( $data->vehiculoedit == null ) ? '1' : $data->vehiculoedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->vehiculoshow = ( $data->vehiculoshow == null ) ? '1' : $data->vehiculoshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE VEHICULO: ' . $data->vehiculo;
+            $data->vehiculo = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO VEHICULO: ' . $data->vehiculocreate;
+            $data->vehiculocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR VEHICULO: ' . $data->vehiculoedit;
+            $data->vehiculoedit = '1';
         }
-        return ' DETALLE VEHICULO: ' . $data->vehiculoshow;
+        if ($bandera == 4) {
+            $data->vehiculoshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculo')->get() );
+            return ' LISTADO DE VEHICULO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculocreate')->get() );
+            return ' NUEVO VEHICULO: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculoedit')->get() );
+            return ' EDITAR VEHICULO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('vehiculoshow')->get() );
+        return ' DETALLE VEHICULO: ' . $cantidad;
     }
 
     /**

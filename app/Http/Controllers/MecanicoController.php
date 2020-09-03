@@ -81,52 +81,38 @@ class MecanicoController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->mecanico = '1';
-            }
-            if ($bandera == 2) {
-                $data->mecanicocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->mecanicoedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->mecanicoshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->mecanico = ( $data->mecanico == null ) ? '1' : $data->mecanico * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->mecanicocreate = ( $data->mecanicocreate == null ) ? '1' : $data->mecanicocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->mecanicoedit = ( $data->mecanicoedit == null ) ? '1' : $data->mecanicoedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->mecanicoshow = ( $data->mecanicoshow == null ) ? '1' : $data->mecanicoshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE MECANICO: ' . $data->mecanico;
+            $data->mecanico = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO MECANICO: ' . $data->mecanicocreate;
+            $data->mecanicocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR MECANICO: ' . $data->mecanicoedit;
+            $data->mecanicoedit = '1';
         }
-        return ' DETALLE MECANICO: ' . $data->mecanicoshow;
+        if ($bandera == 4) {
+            $data->mecanicoshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('mecanico')->get() );
+            return ' LISTADO DE MECANICO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('mecanicocreate')->get() );
+            return ' NUEVO MECANICO: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('mecanicoedit')->get() );
+            return ' EDITAR MECANICO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('mecanicoshow')->get() );
+        return ' DETALLE MECANICO: ' . $cantidad;
     }
 
     public function search_name(Request $request)

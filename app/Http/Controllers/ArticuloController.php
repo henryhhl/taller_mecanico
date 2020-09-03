@@ -66,52 +66,38 @@ class ArticuloController extends Controller
 
     public function getvisitasitio($bandera) {
 
-        $mensaje = '';
-
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->articulo = '1';
-            }
-            if ($bandera == 2) {
-                $data->articulocreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->articuloedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->articuloshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->articulo = ( $data->articulo == null ) ? '1' : $data->articulo * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->articulocreate = ( $data->articulocreate == null ) ? '1' : $data->articulocreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->articuloedit = ( $data->articuloedit == null ) ? '1' : $data->articuloedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->articuloshow = ( $data->articuloshow == null ) ? '1' : $data->articuloshow * 1 + 1;
-            }
-            $data->update();
-        }
-
+        $data = new Visitas();
         if ($bandera == 1) {
-            return ' LISTADO DE ARTICULO: ' . $data->articulo;
+            $data->articulo = '1';
         }
         if ($bandera == 2) {
-            return ' NUEVO ARTICULO: ' . $data->articulocreate;
+            $data->articulocreate = '1';
         }
         if ($bandera == 3) {
-            return ' EDITAR ARTICULO: ' . $data->articuloedit;
+            $data->articuloedit = '1';
         }
-        return ' DETALLE ARTICULO: ' . $data->articuloshow;
+        if ($bandera == 4) {
+            $data->articuloshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
+        if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('articulo')->get() );
+            return ' LISTADO DE ARTICULO: ' . $cantidad;
+        }
+        if ($bandera == 2) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('articulocreate')->get() );
+            return ' NUEVO ARTICULO: ' . $cantidad;
+        }
+        if ($bandera == 3) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('articuloedit')->get() );
+            return ' EDITAR ARTICULO: ' . $cantidad;
+        }
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('articuloshow')->get() );
+        return ' DETALLE ARTICULO: ' . $cantidad;
     }
 
     /**

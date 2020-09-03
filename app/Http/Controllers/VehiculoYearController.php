@@ -77,50 +77,39 @@ class VehiculoYearController extends Controller
 
         $mensaje = '';
 
-        if ( is_null( Visitas::first() ) ) {
-
-            $data = new Visitas();
-            if ($bandera == 1) {
-                $data->year = '1';
-            }
-            if ($bandera == 2) {
-                $data->yearcreate = '1';
-            }
-            if ($bandera == 3) {
-                $data->yearedit = '1';
-            }
-            if ($bandera == 4) {
-                $data->yearshow = '1';
-            }
-            $data->save();
-
-        } else {
-            $data = Visitas::first();
-            if ($bandera == 1) {
-                $data->year = ( $data->year == null ) ? '1' : $data->year * 1 + 1;
-            }
-            if ($bandera == 2) {
-                $data->yearcreate = ( $data->yearcreate == null ) ? '1' : $data->yearcreate * 1 + 1;
-            }
-            if ($bandera == 3) {
-                $data->yearedit = ( $data->yearedit == null ) ? '1' : $data->yearedit * 1 + 1;
-            }
-            if ($bandera == 4) {
-                $data->yearshow = ( $data->yearshow == null ) ? '1' : $data->yearshow * 1 + 1;
-            }
-            $data->update();
+        $data = new Visitas();
+        if ($bandera == 1) {
+            $data->year = '1';
         }
+        if ($bandera == 2) {
+            $data->yearcreate = '1';
+        }
+        if ($bandera == 3) {
+            $data->yearedit = '1';
+        }
+        if ($bandera == 4) {
+            $data->yearshow = '1';
+        }
+        $mytime = Carbon::now('America/La_paz');
+        $data->fecha = $mytime->toDateString();
+        $data->hora = $mytime->toTimeString();
+        $data->save();
+
 
         if ($bandera == 1) {
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('year')->get() );
             return ' LISTADO DE AÑO: ' . $data->year;
         }
         if ($bandera == 2) {
-            return ' NUEVO AÑO: ' . $data->yearcreate;
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('yearcreate')->get() );
+            return ' NUEVO AÑO: ' . $cantidad;
         }
         if ($bandera == 3) {
-            return ' EDITAR AÑO: ' . $data->yearedit;
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('yearedit')->get() );
+            return ' EDITAR AÑO: ' . $cantidad;
         }
-        return ' DETALLE AÑO: ' . $data->yearshow;
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('yearshow')->get() );
+        return ' DETALLE AÑO: ' . $cantidad;
     }
 
     /**
