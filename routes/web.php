@@ -20,13 +20,17 @@ use Illuminate\Support\Facades\Auth;
 
 // https://www.recambioscoche.es/pieza-de-repuesto.html
 
-$servidor = '/servidor/api';
-// $servidor = '';
 
-// $local = '/taller_mecanico';
-$local = '';
 
-//$url_empresa = '';
+// $servidor = '/servidor/api';     //servidor
+$servidor = '';               //local
+
+
+
+$local = '/taller_mecanico';  // local
+// $local = '';                     // servidor
+
+
 
 Route::get('/', function () {
     return redirect('/login');
@@ -38,6 +42,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post( $servidor . '/logout', 'HomeController@logout');
 Route::get( $servidor . '/home/get_information', 'HomeController@get_information');
+
+Route::get( $servidor . '/usuario/get_information', 'UsuarioController@get_information');
+
 Route::get( $servidor . '/home/sesion', 'HomeController@sesion');
 
 Route::get( $local . '/rol', 'HomeController@index');
@@ -225,4 +232,29 @@ Route::get( $servidor . '/venta/create', 'VentaController@create');
 Route::post( $servidor . '/venta/store', 'VentaController@store');
 Route::post( $servidor . '/venta/delete', 'VentaController@destroy');
 Route::get( $servidor . '/venta/vehiculo_cliente', 'VentaController@vehiculo_cliente');
+
+
+Route::get( $local . '/promocion', 'HomeController@index');
+Route::get( $local . '/promocion/create', 'HomeController@index');
+Route::get( $local . '/promocion/editar/{id}', 'HomeController@index');
+
+Route::get( $servidor . '/promocion/index', 'PromocionController@index');
+Route::get( $servidor . '/promocion/create', 'PromocionController@create');
+Route::post( $servidor . '/promocion/store', 'PromocionController@store');
+Route::get( $servidor . '/promocion/edit/{id}', 'PromocionController@edit');
+Route::post( $servidor . '/promocion/update', 'PromocionController@update');
+Route::post( $servidor . '/promocion/delete', 'PromocionController@destroy');
+
+
+Route::get( $local . '/ajuste', 'HomeController@index');
+
+Route::get( $servidor . '/ajuste/get_data', 'AjusteController@index');
+Route::post( $servidor . '/ajuste/store', 'AjusteController@store');
+
+
+Route::get( $local . '/perfil', 'HomeController@index');
+
+Route::get( $servidor . '/perfil', 'UsuarioController@perfil');
+Route::post( $servidor . '/update_perfil', 'UsuarioController@update_perfil');
+
 

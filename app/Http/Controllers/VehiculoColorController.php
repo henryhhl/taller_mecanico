@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\VehiculoColor;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,6 +73,56 @@ class VehiculoColorController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->color = '1';
+            }
+            if ($bandera == 2) {
+                $data->colorcreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->coloredit = '1';
+            }
+            if ($bandera == 4) {
+                $data->colorshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->color = ( $data->color == null ) ? '1' : $data->color * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->colorcreate = ( $data->colorcreate == null ) ? '1' : $data->colorcreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->coloredit = ( $data->coloredit == null ) ? '1' : $data->coloredit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->colorshow = ( $data->colorshow == null ) ? '1' : $data->colorshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE COLOR: ' . $data->color;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO COLOR: ' . $data->colorcreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR COLOR: ' . $data->coloredit;
+        }
+        return ' DETALLE COLOR: ' . $data->colorshow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -92,6 +143,7 @@ class VehiculoColorController extends Controller
 
             return response()->json([
                 'response' => 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -200,6 +252,7 @@ class VehiculoColorController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

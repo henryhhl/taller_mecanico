@@ -19,6 +19,7 @@ class CreateServicioTable extends Migration
             $table->integer('idcategoria')->unsigned()->nullable();
             $table->string('descripcion');
             $table->string('codigo')->nullable();
+            $table->string('categoria')->nullable();
             $table->enum('tipo', ['P', 'S'])->default('S');
             $table->decimal('precio', 12, 2);
             $table->decimal('costo', 12, 2);
@@ -29,7 +30,7 @@ class CreateServicioTable extends Migration
             $table->decimal('stockmin', 12, 2);
             $table->decimal('stockmax', 12, 2);
             $table->string('nota')->nullable();
-            $table->string('imagen')->nullable();
+            $table->text('imagen')->nullable();
             $table->enum('estado', ['N', 'A'])->default('A');
             $table->date('fecha');
             $table->time('hora');

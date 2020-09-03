@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Marca;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,6 +73,56 @@ class VehiculoMarcaController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->marca = '1';
+            }
+            if ($bandera == 2) {
+                $data->marcacreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->marcaedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->marcashow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->marca = ( $data->marca == null ) ? '1' : $data->marca * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->marcacreate = ( $data->marcacreate == null ) ? '1' : $data->marcacreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->marcaedit = ( $data->marcaedit == null ) ? '1' : $data->marcaedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->marcashow = ( $data->marcashow == null ) ? '1' : $data->marcashow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE MARCA: ' . $data->marca;
+        }
+        if ($bandera == 2) {
+            return ' NUEVA MARCA: ' . $data->marcacreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR MARCA: ' . $data->marcaedit;
+        }
+        return ' DETALLE MARCA: ' . $data->marcashow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -92,6 +143,7 @@ class VehiculoMarcaController extends Controller
 
             return response()->json([
                 'response' => 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -205,6 +257,7 @@ class VehiculoMarcaController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

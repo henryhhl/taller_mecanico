@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Articulo;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,56 @@ class ArticuloController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->articulo = '1';
+            }
+            if ($bandera == 2) {
+                $data->articulocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->articuloedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->articuloshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->articulo = ( $data->articulo == null ) ? '1' : $data->articulo * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->articulocreate = ( $data->articulocreate == null ) ? '1' : $data->articulocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->articuloedit = ( $data->articuloedit == null ) ? '1' : $data->articuloedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->articuloshow = ( $data->articuloshow == null ) ? '1' : $data->articuloshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE ARTICULO: ' . $data->articulo;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO ARTICULO: ' . $data->articulocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR ARTICULO: ' . $data->articuloedit;
+        }
+        return ' DETALLE ARTICULO: ' . $data->articuloshow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -83,6 +134,7 @@ class ArticuloController extends Controller
 
             return response()->json([
                 'response' => 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -183,6 +235,7 @@ class ArticuloController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

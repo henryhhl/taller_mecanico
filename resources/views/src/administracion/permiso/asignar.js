@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { notification, Card, Transfer, Switch, Button, Modal } from 'antd';
 import 'antd/dist/antd.css';
 import web from '../../utils/services';
+import PropTypes from 'prop-types';
 
 class Asignar_Permiso extends Component {
     constructor(props) {
@@ -32,7 +33,7 @@ class Asignar_Permiso extends Component {
         };
     }
     componentDidMount() {
-        this.props.get_link('asignar_permiso');
+        this.props.get_link('asignar_permiso', true);
         this.get_data();
     }
     get_data() {
@@ -52,21 +53,48 @@ class Asignar_Permiso extends Component {
                                 title: data.nombre.toUpperCase(),
                             });
                         }
+                        this.props.loadingservice(false, response.data.visitasitio);
                         this.setState({ 
                             array_data: this.state.array_data,
                             array_rol: response.data.rol, 
                         });
+                        return;
                     }
                 }
                 if (response.status == 401) {
                     this.setState({ auth: true, });
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
             });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
+            });            
             if (error.response.status == 401) {
                 this.setState({ auth: true, });
             }
@@ -147,6 +175,9 @@ class Asignar_Permiso extends Component {
     }
     onModalRol() {
         var rol = this.state.rol_usuario;
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -168,7 +199,7 @@ class Asignar_Permiso extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({new_create: true,})}
                                 >
                                     Nuevo
@@ -217,7 +248,7 @@ class Asignar_Permiso extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    className={`forms-control title_form`} value={'Nombre'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nombre'}
                                                     readOnly
                                                 />
                                             </div>
@@ -242,7 +273,7 @@ class Asignar_Permiso extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    className={`forms-control title_form`} value={'Descripcion'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Descripcion'}
                                                     readOnly
                                                 />
                                             </div>
@@ -264,12 +295,12 @@ class Asignar_Permiso extends Component {
                                         </div>
                                     </div>
                                     <div className='forms-groups txts-center mt-4'>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                             onClick={this.onValidarRol.bind(this)}
                                         >
                                             Aceptar
                                         </button>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                             onClick={() => this.setState({
                                                 new_create: false, nombre_rol: '', error_nombrerol: '', descripcion_rol: '',
                                             })}
@@ -449,6 +480,8 @@ class Asignar_Permiso extends Component {
         });
     }
     render() {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
         return (
             <div className='rows'>
                 {this.onModalRol()}
@@ -468,7 +501,7 @@ class Asignar_Permiso extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Rol'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Rol'}
                                                     />
                                                 </div>
                                             </div>
@@ -516,12 +549,27 @@ class Asignar_Permiso extends Component {
                                     />
                                 </div>
                                 <div style={{width: '90%', margin: 'auto', paddingBottom: 10, textAlign: 'center', }}>
-                                    <Button onClick={this.onSesion.bind(this, 1)} disabled={!this.state.disabled}>
-                                        ASIGNAR
-                                    </Button> &nbsp;
-                                    <Button type='danger' disabled={!this.state.disabled} onClick={ this.onCloseRol.bind(this) }>
-                                        CANCELAR
-                                    </Button>
+                                    {(!this.state.disabled) ?
+                                        <Button onClick={this.onSesion.bind(this, 1)} disabled={!this.state.disabled}>
+                                            ASIGNAR
+                                        </Button> : 
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
+                                            onClick={this.onSesion.bind(this, 1)}
+                                        >
+                                            ASIGNAR
+                                        </button>
+                                    }
+                                    &nbsp;
+                                    {(!this.state.disabled) ?
+                                        <Button type='danger' disabled={!this.state.disabled} onClick={ this.onCloseRol.bind(this) }>
+                                            CANCELAR
+                                        </Button> :
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
+                                            onClick={ this.onCloseRol.bind(this) }
+                                        >
+                                            CANCELAR
+                                        </button> 
+                                    }
                                 </div>
                             </Card>
                         </div> : 
@@ -541,6 +589,14 @@ class Asignar_Permiso extends Component {
             </div>
         );
     }
+}
+
+Asignar_Permiso.propTypes = {
+    buttoncolor: PropTypes.string,
+}
+
+Asignar_Permiso.defaultProps = {
+    buttoncolor: '',
 }
 
 export default withRouter(Asignar_Permiso);

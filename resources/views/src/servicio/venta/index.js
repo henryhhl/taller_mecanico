@@ -3,9 +3,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import {withRouter, Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Pagination, notification } from 'antd';
+import { Pagination, notification, Modal } from 'antd';
 import 'antd/dist/antd.css';
 import web from '../../utils/services';
+import { isPermission } from '../../utils/functions';
+import permissions from '../../utils/permisions';
 
 class IndexVenta extends Component {
 
@@ -19,7 +21,7 @@ class IndexVenta extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('venta');
+        this.props.get_link('venta', true);
         this.get_data();
     }
     get_data(page = 1, search = '') {
@@ -31,19 +33,45 @@ class IndexVenta extends Component {
                     return;
                 }
                 if (response.data.response == 1) {
-                    this.props.getventa(response.data.data.data, response.data.pagination, page);
+                    this.props.getventa(response.data.data.data, response.data.pagination, page, response.data.visitasitio);
+                    return;
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => { 
             console.log(error) 
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
         } );
     }
     onAdd() {
-        this.props.history.push('/taller_mecanico/mantenimiento/create');
+        this.props.history.push( web.serv_link + '/mantenimiento/create');
     }
     onShow(data) {}
     onDelete(data) {
@@ -65,6 +93,9 @@ class IndexVenta extends Component {
         this.setState({ timeoutSearch: this.state.timeoutSearch});
     }
     render() {
+        var color = this.props.buttoncolor == '' ? 'outline-focus' : this.props.buttoncolor;
+        var optioneye = this.props.buttoncolor == '' ? 'success' : 'outline-' + this.props.buttoncolor;
+        var optiondelete = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
         return (
             <div className="rows">
                 <div className="cards">
@@ -85,11 +116,13 @@ class IndexVenta extends Component {
                             </div>      
                         </div>
                         <div className="btn-actions-pane-right text-capitalize mb-4">
-                            <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
-                                onClick={this.onAdd.bind(this)}
-                            >
-                                NUEVO
-                            </button>
+                            { isPermission(this.props.permisos_habilitados, permissions.mantenimientocreate) ?
+                                <button className={"btn-wide btn-outline-2x mr-md-2 btn btn-sm btn-" + color }
+                                    onClick={this.onAdd.bind(this)}
+                                >
+                                    NUEVO
+                                </button> : null 
+                            }
                         </div>
                     </div>
                     <div className="forms-groups">
@@ -140,16 +173,20 @@ class IndexVenta extends Component {
                                                         {data.montototal}
                                                 </td>
                                                 <td style={{textAlign: 'right', paddingRight: 8, }}>
-                                                    <button className="mb-2 mr-2 btn-hover-shine btn btn-xs btn-success"
-                                                        onClick={this.onShow.bind(this, data)}
-                                                    >
-                                                        <i className='fa fa-eye'></i>
-                                                    </button>
-                                                    <button className="mb-2 mr-2 btn-hover-shine btn btn-xs btn-danger"
-                                                        onClick={this.onDelete.bind(this, data)}
-                                                    >
-                                                        <i className='fa fa-trash'></i>
-                                                    </button>
+                                                    { isPermission(this.props.permisos_habilitados, permissions.mantenimientoshow) ?
+                                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-xs btn-" + optioneye}
+                                                            onClick={this.onShow.bind(this, data)}
+                                                        >
+                                                            <i className='fa fa-eye'></i>
+                                                        </button> : null 
+                                                    }
+                                                    { isPermission(this.props.permisos_habilitados, permissions.mantenimientodelete) ?
+                                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-xs btn-" + optiondelete}
+                                                            onClick={this.onDelete.bind(this, data)}
+                                                        >
+                                                            <i className='fa fa-trash'></i>
+                                                        </button> : null 
+                                                    }
                                                 </td>
                                             </tr>
                                         )
@@ -179,6 +216,8 @@ IndexVenta.propTypes = {
     venta: PropTypes.array,
     pagination: PropTypes.object,
     paginate: PropTypes.object,
+    buttoncolor: PropTypes.string,
+    permisos_habilitados: PropTypes.array,
 }
 
 IndexVenta.defaultProps = {
@@ -193,6 +232,8 @@ IndexVenta.defaultProps = {
     paginate: {
         venta: 1,
     },
+    buttoncolor: '',
+    permisos_habilitados: [],
 }
 
 export default withRouter(IndexVenta);

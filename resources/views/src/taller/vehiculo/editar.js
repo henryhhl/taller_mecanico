@@ -89,37 +89,7 @@ class EditarVehiculo extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('vehiculo');
-        if (this.props.vehiculo.create == 1) {
-            this.setState({
-                placa: this.props.vehiculo.placa,
-                nroserie: this.props.vehiculo.nroserie,
-                idcliente: this.props.vehiculo.idcliente,
-                idtipo: this.props.vehiculo.idtipo,
-                idmarca: this.props.vehiculo.idmarca,
-                idmodelo: this.props.vehiculo.idmodelo,
-                idcolor: this.props.vehiculo.idcolor,
-                idyear: this.props.vehiculo.idyear,
-                nota: this.props.vehiculo.nota,
-                namecliente: this.props.vehiculo.namecliente,
-                razonsocialcliente: this.props.vehiculo.razonsocialcliente,
-                marca: this.props.vehiculo.marca,
-                modelo: this.props.vehiculo.modelo,
-                year: this.props.vehiculo.year,
-                color: this.props.vehiculo.color,
-                tipo: this.props.vehiculo.tipo,
-                array_cliente: this.props.vehiculo.array_cliente,
-                array_tipo: this.props.vehiculo.array_tipo,
-                array_marca: this.props.vehiculo.array_marca,
-                array_year: this.props.vehiculo.array_year,
-                array_color: this.props.vehiculo.array_color,
-                array_modelo: this.props.vehiculo.array_modelo,
-                imagen: this.props.vehiculo.imagen,
-                foto: this.props.vehiculo.foto,
-            });
-            this.props.initvehiculo();
-            return;
-        }
+        this.props.get_link('vehiculo', true);
         this.get_data();
     }
     get_data() {
@@ -131,6 +101,40 @@ class EditarVehiculo extends Component {
                         return;
                     }
                     if (response.data.response == 1) {
+
+                        this.props.loadingservice(false, response.data.visitasitio);
+
+                        if (this.props.vehiculo.create == 1) {
+                            this.setState({
+                                placa: this.props.vehiculo.placa,
+                                nroserie: this.props.vehiculo.nroserie,
+                                idcliente: this.props.vehiculo.idcliente,
+                                idtipo: this.props.vehiculo.idtipo,
+                                idmarca: this.props.vehiculo.idmarca,
+                                idmodelo: this.props.vehiculo.idmodelo,
+                                idcolor: this.props.vehiculo.idcolor,
+                                idyear: this.props.vehiculo.idyear,
+                                nota: this.props.vehiculo.nota,
+                                namecliente: this.props.vehiculo.namecliente,
+                                razonsocialcliente: this.props.vehiculo.razonsocialcliente,
+                                marca: this.props.vehiculo.marca,
+                                modelo: this.props.vehiculo.modelo,
+                                year: this.props.vehiculo.year,
+                                color: this.props.vehiculo.color,
+                                tipo: this.props.vehiculo.tipo,
+                                array_cliente: this.props.vehiculo.array_cliente,
+                                array_tipo: this.props.vehiculo.array_tipo,
+                                array_marca: this.props.vehiculo.array_marca,
+                                array_year: this.props.vehiculo.array_year,
+                                array_color: this.props.vehiculo.array_color,
+                                array_modelo: this.props.vehiculo.array_modelo,
+                                imagen: this.props.vehiculo.imagen,
+                                foto: this.props.vehiculo.foto,
+                            });
+                            this.props.initvehiculo();
+                            return;
+                        }
+
                         if (this.props.ventacreate == 1) {
                             this.setState({
                                 idcliente: this.props.venta.cliente_first.idcliente,
@@ -138,6 +142,7 @@ class EditarVehiculo extends Component {
                                 razonsocialcliente: this.props.venta.cliente_first.empresa,
                             });
                         }
+
                         var data = response.data.data;
                         this.setState({
                             array_tipo: response.data.tipo,     array_marca: response.data.marca,
@@ -160,16 +165,42 @@ class EditarVehiculo extends Component {
                             imagen: (response.data.imagen.length > 0) ? response.data.imagen[0].imagen:'',
                             foto: (response.data.imagen.length > 0)?response.data.imagen[0].imagen:'',
                         });
+                        return;
                     }
                 }
                 if (response.status == 401) {
                     this.setState({ auth: true, });
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
             if (error.response.status == 401) {
                 this.setState({ auth: true, });
@@ -652,6 +683,7 @@ class EditarVehiculo extends Component {
     }
     onModalVehiculoTipo() {
         var tipo = this.state.tipo;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -674,7 +706,7 @@ class EditarVehiculo extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({new_create: true,})}
                                 >
                                     Nuevo
@@ -733,6 +765,7 @@ class EditarVehiculo extends Component {
     }
     onModalVehiculoMarca() {
         var marca = this.state.marca;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -754,7 +787,7 @@ class EditarVehiculo extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({new_create: true,})}
                                 >
                                     Nuevo
@@ -808,6 +841,7 @@ class EditarVehiculo extends Component {
     }
     onModalVehiculoModelo() {
         var modelo = this.state.modelo;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -830,7 +864,7 @@ class EditarVehiculo extends Component {
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
                                 (this.state.idmarca != '') ?
-                                    <button className="btn-hover-shine btn btn-secondary"
+                                    <button className={"btn-hover-shine btn btn-" + colornew}
                                         onClick={() => this.setState({ new_create: true,})}
                                     >
                                         Nuevo
@@ -889,6 +923,7 @@ class EditarVehiculo extends Component {
     }
     onModalVehiculoYear() {
         var year = this.state.year;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -910,7 +945,7 @@ class EditarVehiculo extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({ new_create: true,})}
                                 >
                                     Nuevo
@@ -969,6 +1004,7 @@ class EditarVehiculo extends Component {
     }
     onModalVehiculoColor() {
         var color = this.state.color;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -990,7 +1026,7 @@ class EditarVehiculo extends Component {
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({ new_create: true,})}
                                 >
                                     Nuevo
@@ -1389,13 +1425,15 @@ class EditarVehiculo extends Component {
         }
     }
     onFormCreate(value) {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
         return (
             <div className='forms-groups'>
                 <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12 mb-4' style={{ paddingTop: 0, }}>
                     <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                         <div className='inputs-groups'>
                             <input type='text'
-                                className={`forms-control title_form`} value={'Descripcion'}
+                                className={`forms-control title_form ${this.props.buttoncolor}`} value={'Descripcion'}
                                 readOnly
                             />
                         </div>
@@ -1417,12 +1455,12 @@ class EditarVehiculo extends Component {
                     </div>
                 </div>
                 <div className='forms-groups txts-center mt-4'>
-                    <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                    <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                         onClick={this.onValidarData.bind(this, value)}
                     >
                         Aceptar
                     </button>
-                    <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                    <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                         onClick={() => this.setState({new_create: false, descripcion: '', errordescripcion: '', })}
                     >
                         Cancelar
@@ -1487,6 +1525,9 @@ class EditarVehiculo extends Component {
         });
     }
     render() {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colorback = this.props.buttoncolor == '' ? 'focus' : this.props.buttoncolor;
         return (
             <div className="rows">
                 {this.onModalShearchCliente()}
@@ -1516,7 +1557,7 @@ class EditarVehiculo extends Component {
                                             }}
                                         ></button>
                                     </Tooltip>
-                                    <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
+                                    <button className={"btn-wide btn-outline-2x mr-md-2 btn-sm btn btn-outline-" + colorback}
                                         onClick={this.onBack.bind(this)}
                                     >
                                         Atras
@@ -1531,11 +1572,7 @@ class EditarVehiculo extends Component {
                                         <div className='cols-lg-3 cols-md-3 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    style={{
-                                                        background: '#1890ff', color: 'white',
-                                                        fontWeight: 'bold', textAlign: 'center', cursor: 'pointer',
-                                                    }}
-                                                    className={`forms-control`} value={'Clave Cliente'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Clave Cliente'}
                                                     readOnly
                                                 />
                                             </div>
@@ -1585,7 +1622,7 @@ class EditarVehiculo extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Nombre del Cliente'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nombre del Cliente'}
                                                 />
                                             </div>
                                         </div>
@@ -1605,7 +1642,7 @@ class EditarVehiculo extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Empresa del Cliente'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Empresa del Cliente'}
                                                 />
                                             </div>
                                         </div>
@@ -1655,7 +1692,7 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Tipo Vehiculo'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Tipo Vehiculo'}
                                                     />
                                                 </div>
                                             </div>
@@ -1682,7 +1719,7 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Marca'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Marca'}
                                                     />
                                                 </div>
                                             </div>
@@ -1711,7 +1748,7 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Modelo'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Modelo'}
                                                     />
                                                 </div>
                                             </div>
@@ -1748,7 +1785,7 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Año'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Año'}
                                                     />
                                                 </div>
                                             </div>
@@ -1775,7 +1812,7 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Color'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Color'}
                                                     />
                                                 </div>
                                             </div>
@@ -1802,7 +1839,7 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'Nro de Serie'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nro de Serie'}
                                                     />
                                                 </div>
                                             </div>
@@ -1828,11 +1865,10 @@ class EditarVehiculo extends Component {
                                             <div className='cols-lg-7 cols-md-7 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <textarea type='text' placeholder='Ingresar Descripcion' 
-                                                        style={{ background: '#1890ff', color: 'white', 
-                                                            fontWeight: 'bold', textAlign: 'center', cursor: 'pointer', 
+                                                        style={{ 
                                                             height: 'auto', paddingTop: 8, paddingBottom: 2, maxHeight: 40,
                                                         }}
-                                                        className={`forms-control`} value={'Observaciones'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Observaciones'}
                                                         readOnly
                                                     />
                                                 </div>
@@ -1864,12 +1900,12 @@ class EditarVehiculo extends Component {
                                 </div>
                             </div>
                             <div className='forms-groups txts-center mt-2'>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                     onClick={this.onValidar.bind(this)}
                                 >
                                     Aceptar
                                 </button>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                     onClick={this.onBack.bind(this)}
                                 >
                                     Cancelar
@@ -1896,6 +1932,7 @@ EditarVehiculo.propTypes = {
     vehiculo: PropTypes.object,
     ventacreate: PropTypes.number,
     venta: PropTypes.object,
+    buttoncolor: PropTypes.string,
 }
 
 EditarVehiculo.defaultProps = {
@@ -1918,6 +1955,7 @@ EditarVehiculo.defaultProps = {
         array_color: [], array_modelo: [],
         imagen: '', foto: '',
     },
+    buttoncolor: '',
 }
 
 export default withRouter(EditarVehiculo);

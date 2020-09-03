@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Detalle_Permiso;
 use App\Detalle_Rol;
 use App\Rol;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +61,7 @@ class RolController extends Controller
                     'from'         => $data->firstItem(),
                     'to'           => $data->lastItem(),
                 ],
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -73,6 +75,56 @@ class RolController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->grupousuario = '1';
+            }
+            if ($bandera == 2) {
+                $data->grupousuariocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->grupousuarioedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->grupousuarioshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->grupousuario = ( $data->grupousuario == null ) ? '1' : $data->grupousuario * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->grupousuariocreate = ( $data->grupousuariocreate == null ) ? '1' : $data->grupousuariocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->grupousuarioedit = ( $data->grupousuarioedit == null ) ? '1' : $data->grupousuarioedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->grupousuarioshow = ( $data->grupousuarioshow == null ) ? '1' : $data->grupousuarioshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE ROL: ' . $data->grupousuario;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO ROL: ' . $data->grupousuariocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR ROL: ' . $data->grupousuarioedit;
+        }
+        return ' DETALLE ROL: ' . $data->grupousuarioshow;
     }
 
     /**
@@ -110,6 +162,7 @@ class RolController extends Controller
             return response()->json([
                 'response'      => 1,
                 'array_usuario' => $array_usuario,
+                'visitasitio' => $this->getvisitasitio(2),
                 // 'data' => $data,
             ]);
 
@@ -373,6 +426,7 @@ class RolController extends Controller
                 'data'     => $data,
                 'array_usuario' => $array_usuario,
                 'usuario_activo' => $usuario_activo,
+                'visitasitio' => $this->getvisitasitio(3),
                 //'permiso' => $permiso,
             ]);
 

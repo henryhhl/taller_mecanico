@@ -24,7 +24,7 @@ class CreateMecanicoTable extends Migration
             $table->string('provincia')->nullable();
             $table->string('direccion')->nullable();
             $table->string('email')->nullable();
-            $table->string('imagen')->nullable();
+            $table->text('imagen')->nullable();
             $table->enum('genero', ['N', 'M', 'F'])->default('N');
             $table->enum('estado', ['N', 'A'])->default('A');
             $table->date('fecha');

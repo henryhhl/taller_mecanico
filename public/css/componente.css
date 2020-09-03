@@ -519,17 +519,27 @@
 }
 
 .hg_40 div {
-    height: 40px;
-    line-height: 40px;
+    height: 40px !important;
+    line-height: 40px !important;
 }
 .hg_40 div input {
-    height: 40px;
-    line-height: 40px;
+    height: 40px !important;
+    line-height: 40px !important;
+}
+
+.hg_40 .ant-picker-input {
+    height: 28px !important;
+    line-height: 28px !important;
+}
+
+.hg_40 .ant-select-selector {
+    height: 40px !important;
+    line-height: 40px !important;
 }
 
 .ant-input.ant-transfer-list-search {
-    height: 40px;
-    line-height: 40px;
+    height: 40px !important;
+    line-height: 40px !important;
 }
 /* .LazyLoad.is-visible {
     height: 40px;
@@ -539,4 +549,107 @@
     height: 40px;
     line-height: 40px;
 } */
+
+.primary {
+    color: #fff;
+    background: #3f6ad8;
+    border-color: #3f6ad8
+}
+.primary:hover {
+    color: #fff;
+    background: #2955c8;
+    border-color: #2651be
+}
+.secondary {
+    color: #fff;
+    background: #6c757d;
+    border-color: #6c757d
+}
+.secondary:hover {
+    color: #fff;
+    background: #5a6268;
+    border-color: #545b62
+}
+.success {
+    color: #fff;
+    background: #3ac47d;
+    border-color: #3ac47d
+}
+.success:hover {
+    color: #fff;
+    background: #31a66a;
+    border-color: #2e9d64
+}
+.info {
+    color: #fff;
+    background: #16aaff;
+    border-color: #16aaff
+}
+.info:hover {
+    color: #fff;
+    background: #0098ef;
+    border-color: #0090e2
+}
+.warning {
+    color: #212529;
+    background: #f7b924;
+    border-color: #f7b924
+}
+.warning:hover {
+    color: #212529;
+    background: #eca909;
+    border-color: #e0a008
+}
+.danger {
+    color: #fff;
+    background: #d92550;
+    border-color: #d92550
+}
+.danger:hover {
+    color: #fff;
+    background: #b81f44;
+    border-color: #ad1e40
+}
+.focus {
+    color: #fff;
+    background: #444054;
+    border-color: #444054
+}
+.focus:hover {
+    color: #fff;
+    background: #322f3e;
+    border-color: #2d2a37
+}
+.alternate {
+    color: #fff;
+    background: #794c8a;
+    border-color: #794c8a
+}
+.alternate:hover {
+    color: #fff;
+    background: #633e71;
+    border-color: #5c3a69
+}
+.light {
+    color: #212529;
+    background: #eee;
+    border-color: #eee
+}
+
+.light:hover {
+    color: #212529;
+    background: #dbdbdb;
+    border-color: #d5d5d5
+}
+.dark {
+    color: #fff;
+    background: #343a40;
+    border-color: #343a40
+}
+
+.dark:hover {
+    color: #fff;
+    background: #23272b;
+    border-color: #1d2124
+}
 

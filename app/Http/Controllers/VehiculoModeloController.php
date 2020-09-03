@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Modelo;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,6 +72,56 @@ class VehiculoModeloController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->modelo = '1';
+            }
+            if ($bandera == 2) {
+                $data->modelocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->modeloedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->modeloshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->modelo = ( $data->modelo == null ) ? '1' : $data->modelo * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->modelocreate = ( $data->modelocreate == null ) ? '1' : $data->modelocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->modeloedit = ( $data->modeloedit == null ) ? '1' : $data->modeloedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->modeloshow = ( $data->modeloshow == null ) ? '1' : $data->modeloshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE MODELO MARCA: ' . $data->modelo;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO MODELO MARCA: ' . $data->modelocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR MODELO MARCA: ' . $data->modeloedit;
+        }
+        return ' DETALLE MODELO MARCA: ' . $data->modeloshow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -98,6 +149,7 @@ class VehiculoModeloController extends Controller
             return response()->json([
                 'response'  => 1,
                 'data'      => $vehiculomarca,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -217,6 +269,7 @@ class VehiculoModeloController extends Controller
                 'response' => 1,
                 'data' => $data,
                 'vehiculomarca'  => $vehiculomarca,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

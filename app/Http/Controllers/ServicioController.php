@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Servicio;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -74,6 +75,56 @@ class ServicioController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->producto = '1';
+            }
+            if ($bandera == 2) {
+                $data->productocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->productoedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->productoshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->producto = ( $data->producto == null ) ? '1' : $data->producto * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->productocreate = ( $data->productocreate == null ) ? '1' : $data->productocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->productoedit = ( $data->productoedit == null ) ? '1' : $data->productoedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->productoshow = ( $data->productoshow == null ) ? '1' : $data->productoshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE SERVICIO: ' . $data->producto;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO SERVICIO: ' . $data->productocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR SERVICIO: ' . $data->productoedit;
+        }
+        return ' DETALLE SERVICIO: ' . $data->productoshow;
+    }
+
 
     public function get_data()
     {
@@ -134,6 +185,7 @@ class ServicioController extends Controller
                     'from'         => $articulo->firstItem(),
                     'to'           => $articulo->lastItem(),
                 ],
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -238,6 +290,7 @@ class ServicioController extends Controller
                 'response' => 1,
                 'marca' => $marca,
                 'categoria' => $categoria,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -417,6 +470,7 @@ class ServicioController extends Controller
                 'data' => $data,
                 'marca' => $marca,
                 'categoria' => $categoria,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

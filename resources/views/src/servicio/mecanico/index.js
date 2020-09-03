@@ -4,9 +4,11 @@ import axios from 'axios';
 import {withRouter, Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Pagination, notification  } from 'antd';
+import { Pagination, notification, Modal  } from 'antd';
 import 'antd/dist/antd.css';
 import web from '../../utils/services';
+import { isPermission } from '../../utils/functions';
+import permissions from '../../utils/permisions';
 
 class IndexMecanico extends Component {
 
@@ -20,10 +22,10 @@ class IndexMecanico extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('mecanico');
-        this.get_data(1, '');
+        this.props.get_link('mecanico', true);
+        this.get_data();
     }
-    get_data(page, search) {
+    get_data(page = 1, search = '') {
         axios.get( web.servidor + '/mecanico/index?page=' + page + '&search=' + search + '&nropaginate=' + 10).then(
             (response) => {
                 console.log(response.data)
@@ -33,14 +35,40 @@ class IndexMecanico extends Component {
                         return;
                     }
                     if (response.data.response == 1) {
-                        this.props.getmecanico(response.data.data.data, response.data.pagination, page);
+                        this.props.getmecanico(response.data.data.data, response.data.pagination, page, response.data.visitasitio);
+                        return;
                     }
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
             if (error.response.status == 401) {
                 this.setState({
@@ -85,6 +113,9 @@ class IndexMecanico extends Component {
         this.setState({ timeoutSearch: this.state.timeoutSearch});
     }
     render() {
+        var color = this.props.buttoncolor == '' ? 'outline-focus' : this.props.buttoncolor;
+        var optioneditar = this.props.buttoncolor == '' ? 'primary' : 'outline-' + this.props.buttoncolor;
+        var optiondelete = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
         return (
             <div className="rows">
                 <div className="cards">
@@ -105,11 +136,13 @@ class IndexMecanico extends Component {
                             </div>      
                         </div>
                         <div className="btn-actions-pane-right text-capitalize mb-4">
-                            <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
-                                onClick={this.onAdd.bind(this)}
-                            >
-                                Nuevo
-                            </button>
+                            { isPermission(this.props.permisos_habilitados, permissions.mecanicocreate) ?
+                                <button className={"btn-wide btn-outline-2x mr-md-2 btn btn-sm btn-" + color }
+                                    onClick={this.onAdd.bind(this)}
+                                >
+                                    Nuevo
+                                </button> : null 
+                            }
                         </div>
                     </div>
                     <div className="forms-groups">
@@ -150,16 +183,20 @@ class IndexMecanico extends Component {
                                                     {(data.telefono == null || data.telefono == '')?'S/Telefono':data.telefono}
                                                 </td>
                                                 <td>
-                                                <button className="mb-2 mr-2 btn-hover-shine btn btn-xs btn-primary"
-                                                    onClick={this.onEdit.bind(this, data)}
-                                                >
-                                                    <i className='fa fa-edit'></i>
-                                                </button>
-                                                <button className="mb-2 mr-2 btn-hover-shine btn btn-xs btn-danger"
-                                                    onClick={this.onDelete.bind(this, data)}
-                                                >
-                                                    <i className='fa fa-trash'></i>
-                                                </button>
+                                                { isPermission(this.props.permisos_habilitados, permissions.mecanicoeditar) ?
+                                                    <button className={"mb-2 mr-2 btn-hover-shine btn btn-xs btn-" + optioneditar }
+                                                        onClick={this.onEdit.bind(this, data)}
+                                                    >
+                                                        <i className='fa fa-edit'></i>
+                                                    </button> : null 
+                                                }
+                                                { isPermission(this.props.permisos_habilitados, permissions.mecanicodelete) ?
+                                                    <button className={"mb-2 mr-2 btn-hover-shine btn btn-xs btn-" + optiondelete}
+                                                        onClick={this.onDelete.bind(this, data)}
+                                                    >
+                                                        <i className='fa fa-trash'></i>
+                                                    </button> : null 
+                                                }
                                                 </td>
                                             </tr>
                                         )
@@ -189,6 +226,8 @@ IndexMecanico.propTypes = {
     mecanico: PropTypes.array,
     pagination: PropTypes.object,
     paginate: PropTypes.object,
+    buttoncolor: PropTypes.string,
+    permisos_habilitados: PropTypes.array,
 }
 
 IndexMecanico.defaultProps = {
@@ -207,6 +246,8 @@ IndexMecanico.defaultProps = {
     paginate: {
         mecanico: 1,
     },
+    buttoncolor: '',
+    permisos_habilitados: [],
 }
 
 export default withRouter(IndexMecanico);

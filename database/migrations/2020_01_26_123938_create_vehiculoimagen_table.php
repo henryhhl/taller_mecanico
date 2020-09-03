@@ -16,7 +16,7 @@ class CreateVehiculoimagenTable extends Migration
         Schema::create('vehiculoimagen', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('idvehiculo')->unsigned();
-            $table->string('imagen');
+            $table->text('imagen');
             $table->enum('estado', ['A', 'N'])->default('A');
             $table->softDeletes();
             $table->timestamps();

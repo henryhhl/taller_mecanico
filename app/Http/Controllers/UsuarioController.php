@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Ajuste;
 use App\Detalle_Rol;
 use App\Rol;
 use App\User;
+use App\Visitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,101 @@ class UsuarioController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function perfil() {
+        try {
+
+            $sesion = Auth::guest();
+
+            if ($sesion) {
+                return response()->json([
+                    'response' => -3,
+                    'sesion'   => $sesion,
+                ]);
+            }
+
+            $usuario = DB::table('users as user')
+                ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
+                ->leftJoin('rol as grupo', 'det.idrol', '=', 'grupo.id')
+                ->select('grupo.nombre as rol', 'grupo.descripcion', 'user.id', 
+                    'user.nombre', 'user.apellido', 'user.nacimiento', 'user.usuario', 'user.imagen', 
+                    'user.genero', 'user.email_verified_at as email'
+                )
+                ->where('user.id', '=', Auth::user()->id)
+                ->first();
+
+            return response()->json([
+                'response' => 1,
+                'usuario'  => $usuario,
+                'visitasitio' => $this->getvisitasitio(5),
+            ]);
+        } catch(\Exception $th) {
+            return response()->json([
+                'response' => 0,
+                'message' => 'Error al procesar la solicitud',
+                'error' => [
+                    'file'    => $th->getFile(),
+                    'line'    => $th->getLine(),
+                    'message' => $th->getMessage()
+                ]
+            ]);
+        }
+    }
+
+    public function get_information() {
+
+        try {
+            $session = app('session');
+            $token = null;
+
+            if (isset($session)) {
+                $token = $session->token();
+            }
+
+            $data = Ajuste::where('idusuario', '=', Auth::user()->id)->orderBy('id')->first();
+
+            $rol = DB::table('detalle_rol')->where([['idusuario', '=', Auth::user()->id], ['estado', '=', 'A']])->first();
+
+            $permisos = [];
+
+            if (!is_null($rol)) {
+                $permisos = DB::table('permiso as perm')
+                    ->leftJoin('detalle_permiso as det', 'perm.id', '=', 'det.idpermiso')
+                    ->select('perm.id', 'perm.nombre', 'det.estado')
+                    ->where('det.idrol', '=', $rol->idrol)
+                    ->get();
+            }
+
+            $usuario = DB::table('users as user')
+                ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
+                ->leftJoin('rol as grupo', 'det.idrol', '=', 'grupo.id')
+                ->select('grupo.nombre as rol', 'grupo.descripcion', 'user.id', 
+                    'user.nombre', 'user.apellido', 'user.nacimiento', 'user.usuario', 'user.imagen', 
+                    'user.genero', 'user.email_verified_at as email'
+                )
+                ->where('user.id', '=', Auth::user()->id)
+                ->first();
+
+            return response()->json([
+                'response' => 1,
+                'token'    => $token,
+                'usuario'  => $usuario,
+                'ajuste'   => $data,
+                'permiso'   => $permisos,
+            ]);
+        } catch(\Exception $th) {
+            return response()->json([
+                'response' => 0,
+                'message' => 'Error al procesar la solicitud',
+                'error' => [
+                    'file'    => $th->getFile(),
+                    'line'    => $th->getLine(),
+                    'message' => $th->getMessage()
+                ]
+            ]);
+        } 
+    }
+    
     public function index(Request $request)
     {
         try {
@@ -72,6 +169,7 @@ class UsuarioController extends Controller
                     'from'         => $data->firstItem(),
                     'to'           => $data->lastItem(),
                 ],
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -85,6 +183,65 @@ class UsuarioController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->usuario = '1';
+            }
+            if ($bandera == 2) {
+                $data->usuariocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->usuarioedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->usuarioshow = '1';
+            }
+            if ($bandera == 5) {
+                $data->perfil = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->usuario = ( $data->usuario == null ) ? '1' : $data->usuario * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->usuariocreate = ( $data->usuariocreate == null ) ? '1' : $data->usuariocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->usuarioedit = ( $data->usuarioedit == null ) ? '1' : $data->usuarioedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->usuarioshow = ( $data->usuarioshow == null ) ? '1' : $data->usuarioshow * 1 + 1;
+            }
+            if ($bandera == 5) {
+                $data->perfil = ( $data->perfil == null ) ? '1' : $data->perfil * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE USUARIO: ' . $data->usuario;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO USUARIO: ' . $data->usuariocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR USUARIO: ' . $data->usuarioedit;
+        }
+        if ($bandera == 3) {
+            return ' DETALLE USUARIO: ' . $data->usuarioshow;
+        }
+        return ' PERFIL: ' . $data->usuarioshow;
     }
 
     /**
@@ -110,6 +267,7 @@ class UsuarioController extends Controller
             return response()->json([
                 'response'  => 1,
                 'data'      => $data,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -181,7 +339,7 @@ class UsuarioController extends Controller
 
             $data->usuario = $usuario;
             $data->password = bcrypt($password);
-            $data->imagen = $rutadelarchivo;
+            $data->imagen = $request->input('foto');
             $data->tipo = 'S';
             $data->save();
 
@@ -213,6 +371,76 @@ class UsuarioController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function update_perfil(Request $request) {
+
+        try {
+            DB::beginTransaction();
+
+            $nombre = $request->input('nombre');
+            $apellido = $request->input('apellido');
+            $genero = $request->input('genero');
+            $nacimiento = $request->input('nacimiento');
+            $email = $request->input('email');
+            $img = $request->input('imagen');
+
+            $registro = date('Y').date('d').date('m').date('h').date('i').date('s');
+            $rutadelarchivo = null;
+
+            if (Input::hasFile('foto')){
+            
+                $imagen = $request->file('foto');
+                $name = $imagen->getClientOriginalName();
+                $extension = $imagen->getClientOriginalExtension();
+                $nuevoNombre = 'usuario-'.$registro.'.'.$extension;
+
+                $rutadelarchivo = '/img/usuario/'.$nuevoNombre;
+
+                $archivo = Input::file('foto');
+                $archivo->move(public_path().'/img/usuario/', $nuevoNombre);
+
+            }
+
+            $data = User::find(Auth::user()->id);
+            $data->nombre = $nombre;
+            $data->apellido = $apellido;
+            $data->nacimiento = $nacimiento;
+            $data->genero = $genero;
+            $data->email_verified_at = $email;
+            $data->imagen = $img;
+            $data->update();
+
+            $usuario = DB::table('users as user')
+                ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
+                ->leftJoin('rol as grupo', 'det.idrol', '=', 'grupo.id')
+                ->select('grupo.nombre as rol', 'grupo.descripcion', 'user.id', 
+                    'user.nombre', 'user.apellido', 'user.nacimiento', 'user.usuario', 'user.imagen', 
+                    'user.genero', 'user.email_verified_at as email'
+                )
+                ->where('user.id', '=', Auth::user()->id)
+                ->first();
+
+            DB::commit();
+
+            return response()->json([
+                'response' => 1,
+                'usuario'  => $usuario,
+            ]);
+
+        }catch(\Exception $th) {
+            DB::rollBack();
+            return response()->json([
+                'response' => 0,
+                'message' => 'Error al procesar la solicitud',
+                'error' => [
+                    'file'    => $th->getFile(),
+                    'line'    => $th->getLine(),
+                    'message' => $th->getMessage()
+                ]
+            ]);
+        }
+
     }
 
     /**
@@ -289,6 +517,7 @@ class UsuarioController extends Controller
                 'data' => $data,
                 'rol' => $rol,
                 'array_rol' => $array_rol,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {
@@ -350,7 +579,7 @@ class UsuarioController extends Controller
             $data->usuario = $usuario;
             $data->password = bcrypt($password);
             if ($rutadelarchivo != null) {
-                $data->imagen = $rutadelarchivo;
+                $data->imagen = $request->input('foto');
             }
             $data->update();
 

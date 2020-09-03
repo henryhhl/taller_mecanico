@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Detalle_Permiso;
+use App\Visitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,8 @@ class PermisoController extends Controller
                 'permiso' => $permiso,
                 'rol' => $rol,
                 'sesion'   => Auth::guest(),
-                'user'   => Auth::user(),
+                'user'   => Auth::user(), 
+                'visitasitio' => $this->getvisitasitio(),
             ]);
 
         }catch(\Exception $th) {
@@ -66,6 +68,29 @@ class PermisoController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio() {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            
+            $data->asignarpermiso = '1';
+            
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            
+            $data->asignarpermiso = ( $data->asignarpermiso == null ) ? '1' : $data->asignarpermiso * 1 + 1;
+            
+            $data->update();
+        }
+
+        return ' ASIGNAR PERMISO: ' . $data->asignarpermiso;
     }
 
     /**

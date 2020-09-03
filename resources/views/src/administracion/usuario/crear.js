@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {withRouter, Redirect} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import { notification, Card, Select, DatePicker, Modal } from 'antd';
 import 'antd/dist/antd.css';
@@ -46,7 +47,7 @@ class CreateUsuario extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('usuario');
+        this.props.get_link('usuario', true);
         this.get_data();
     }
     get_data() {
@@ -58,17 +59,44 @@ class CreateUsuario extends Component {
                         return;
                     }
                     if (response.data.response == 1) {
+                        this.props.loadingservice(false, response.data.visitasitio);
                         this.setState({
                             array_rol: response.data.data,
                         });
+                        return;
                     }
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch(
             error => {
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
                 notification.error({
                     message: 'ERROR',
                     description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                    zIndex: 1200,
                 });
                 if (error.response.status == 401) {
                     this.setState({ auth: true, });
@@ -177,6 +205,7 @@ class CreateUsuario extends Component {
         formdata.append('genero', this.state.genero);
         formdata.append('nacimiento', nacimiento);
         formdata.append('imagen', this.state.imagen);
+        formdata.append('foto', this.state.foto);
         formdata.append('usuario', this.state.usuario);
         formdata.append('password', this.state.password);
         formdata.append('idrol', this.state.rol.id);
@@ -270,6 +299,9 @@ class CreateUsuario extends Component {
     }
     onModalRol() {
         var rol = this.state.rol;
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_create) ? <div>&nbsp;</div> : null}
@@ -291,7 +323,7 @@ class CreateUsuario extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({new_create: true,})}
                                 >
                                     Nuevo
@@ -340,7 +372,7 @@ class CreateUsuario extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    className={`forms-control title_form`} value={'Nombre'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nombre'}
                                                     readOnly
                                                 />
                                             </div>
@@ -365,7 +397,7 @@ class CreateUsuario extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    className={`forms-control title_form`} value={'Descripcion'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Descripcion'}
                                                     readOnly
                                                 />
                                             </div>
@@ -387,12 +419,12 @@ class CreateUsuario extends Component {
                                         </div>
                                     </div>
                                     <div className='forms-groups txts-center mt-4'>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                             onClick={this.onValidarRol.bind(this)}
                                         >
                                             Aceptar
                                         </button>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                             onClick={() => this.setState({
                                                 new_create: false, nombre_rol: '', error_nombrerol: '', descripcion_rol: '',
                                             })}
@@ -473,7 +505,7 @@ class CreateUsuario extends Component {
                 this.setState({ loading_create: false, });
             }
         ).catch( error => {
-            this.setState({ loading_create: false, });ç
+            this.setState({ loading_create: false, });
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
@@ -484,8 +516,12 @@ class CreateUsuario extends Component {
         } );
     }
     render() {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colorback = this.props.buttoncolor == '' ? 'focus' : this.props.buttoncolor;
         return (
             <div className="rows">
+                
                 {this.onModalRol()}
                 <div className="cards">
                     {(!this.state.loading)?
@@ -497,7 +533,7 @@ class CreateUsuario extends Component {
                                 headStyle={{fontSize: 14, }}
                                 bodyStyle={{padding: 4, paddingTop: 0, }}
                                 extra={ 
-                                    <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
+                                    <button className={"btn-wide btn-outline-2x mr-md-2 btn-sm btn btn-outline-" + colorback}
                                         onClick={this.onBack.bind(this)}
                                     >
                                         Atras
@@ -512,7 +548,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Nombre'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nombre'}
                                                         />
                                                     </div>
                                                 </div>
@@ -536,7 +572,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Apellido'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Apellido'}
                                                         />
                                                     </div>
                                                 </div>
@@ -562,7 +598,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Genero'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Genero'}
                                                         />
                                                     </div>
                                                 </div>
@@ -584,7 +620,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Nacimiento'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nacimiento'}
                                                         />
                                                     </div>
                                                 </div>
@@ -608,7 +644,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Rol'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Rol'}
                                                         />
                                                     </div>
                                                 </div>
@@ -632,7 +668,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Imagen'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Imagen'}
                                                         />
                                                     </div>
                                                 </div>
@@ -657,7 +693,7 @@ class CreateUsuario extends Component {
                                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                 <div className='inputs-groups'>
                                                     <input type='text' readOnly
-                                                        className={`forms-control title_form`} value={'AUTENTIFICACION'}
+                                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'AUTENTIFICACION'}
                                                     />
                                                 </div>
                                             </div>
@@ -667,7 +703,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Usuario'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Usuario'}
                                                         />
                                                     </div>
                                                 </div>
@@ -691,7 +727,7 @@ class CreateUsuario extends Component {
                                                 <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                                     <div className='inputs-groups'>
                                                         <input type='text' readOnly
-                                                            className={`forms-control title_form`} value={'Password'}
+                                                            className={`forms-control title_form ${this.props.buttoncolor}`} value={'Password'}
                                                         />
                                                     </div>
                                                 </div>
@@ -717,12 +753,12 @@ class CreateUsuario extends Component {
                             </Card>
 
                             <div className='forms-groups txts-center mt-4'>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                     onClick={this.onValidar.bind(this)}
                                 >
                                     Aceptar
                                 </button>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                     onClick={this.onBack.bind(this)}
                                 >
                                     Cancelar
@@ -756,6 +792,14 @@ class CreateUsuario extends Component {
             </div>
         );
     }
+}
+
+CreateUsuario.propTypes = {
+    buttoncolor: PropTypes.string,
+}
+
+CreateUsuario.defaultProps = {
+    buttoncolor: '',
 }
 
 export default withRouter(CreateUsuario);

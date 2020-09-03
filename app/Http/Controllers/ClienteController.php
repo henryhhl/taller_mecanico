@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Cliente;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +61,7 @@ class ClienteController extends Controller
                     'from'         => $data->firstItem(),
                     'to'           => $data->lastItem(),
                 ],
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -73,6 +75,56 @@ class ClienteController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->cliente = '1';
+            }
+            if ($bandera == 2) {
+                $data->clientecreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->clienteedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->clienteshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->cliente = ( $data->cliente == null ) ? '1' : $data->cliente * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->clientecreate = ( $data->clientecreate == null ) ? '1' : $data->clientecreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->clienteedit = ( $data->clienteedit == null ) ? '1' : $data->clienteedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->clienteshow = ( $data->clienteshow == null ) ? '1' : $data->clienteshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE CLIENTE: ' . $data->cliente;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO CLIENTE: ' . $data->clientecreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR CLIENTE: ' . $data->clienteedit;
+        }
+        return ' DETALLE CLIENTE: ' . $data->clienteshow;
     }
 
     public function search_name(Request $request)
@@ -252,6 +304,7 @@ class ClienteController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => sizeof($data) + 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -322,7 +375,7 @@ class ClienteController extends Controller
             $data->ciudad = $ciudad;
             $data->provincia = $provincia;
             $data->email = $email;
-            $data->imagen = $rutadelarchivo;
+            $data->imagen = $request->input('foto');
             $data->estado = 'A';
             $data->fecha = $mytime->toDateString();
             $data->hora = $mytime->toTimeString();
@@ -392,6 +445,7 @@ class ClienteController extends Controller
                 'response' => 1,
                 'data' => $data,
                 'vehiculo' => $vehiculo,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {
@@ -469,7 +523,7 @@ class ClienteController extends Controller
             $data->email = $email;
 
             if ($bandera == 1) {
-                $data->imagen = $rutadelarchivo;
+                $data->imagen = $request->input('foto');
             }
             $data->update();
 

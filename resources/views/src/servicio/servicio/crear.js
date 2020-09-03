@@ -65,7 +65,7 @@ class CreateServicio extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('almacen');
+        this.props.get_link('almacen', true);
         this.get_data();
     }
     get_data() {
@@ -77,17 +77,44 @@ class CreateServicio extends Component {
                         return;
                     }
                     if (response.data.response == 1) {
+                        this.props.loadingservice(false, response.data.visitasitio);
                         this.setState({
                             array_marca: response.data.marca,
                             array_categoria: response.data.categoria,
                         });
+                        return;
                     }
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
             if (error.response.status == 401) {
                 this.setState({ auth: true, });
@@ -386,6 +413,9 @@ class CreateServicio extends Component {
         }
     }
     onModalCategoria() {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_categoria) ? <div>&nbsp;</div> : null}
@@ -409,7 +439,7 @@ class CreateServicio extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({new_categoria: true,})}
                                 >
                                     Nuevo
@@ -463,11 +493,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    style={{
-                                                        background: '#1890ff', color: 'white',
-                                                        fontWeight: 'bold', textAlign: 'center', cursor: 'pointer',
-                                                    }}
-                                                    className={`forms-control`} value={'Descripcion'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Descripcion'}
                                                     readOnly
                                                 />
                                             </div>
@@ -491,12 +517,12 @@ class CreateServicio extends Component {
                                         </div>
                                     </div>
                                     <div className='forms-groups txts-center mt-4'>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                             onClick={this.onValidarCategoria.bind(this)}
                                         >
                                             Aceptar
                                         </button>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                             onClick={() => this.setState({new_categoria: false, descripcion_categoria: '', error_descripcioncategoria: '', })}
                                         >
                                             Cancelar
@@ -511,6 +537,9 @@ class CreateServicio extends Component {
         );
     }
     onModalMarca() {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colornew = this.props.buttoncolor == '' ? 'secondary' : this.props.buttoncolor;
         return (
             <Modal
                 title={(!this.state.new_marca) ? <div>&nbsp;</div> : null}
@@ -534,7 +563,7 @@ class CreateServicio extends Component {
                             bodyStyle={{ padding: 0, }} style={{position: 'relative', top: -9,}}
                             headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold'}}
                             extra={
-                                <button className="btn-hover-shine btn btn-secondary"
+                                <button className={"btn-hover-shine btn btn-" + colornew}
                                     onClick={() => this.setState({new_marca: true,})}
                                 >
                                     Nuevo
@@ -588,11 +617,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                             <div className='inputs-groups'>
                                                 <input type='text'
-                                                    style={{
-                                                        background: '#1890ff', color: 'white',
-                                                        fontWeight: 'bold', textAlign: 'center', cursor: 'pointer',
-                                                    }}
-                                                    className={`forms-control`} value={'Descripcion'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Descripcion'}
                                                     readOnly
                                                 />
                                             </div>
@@ -616,12 +641,12 @@ class CreateServicio extends Component {
                                         </div>
                                     </div>
                                     <div className='forms-groups txts-center mt-4'>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                             onClick={this.onValidarMarca.bind(this)}
                                         >
                                             Aceptar
                                         </button>
-                                        <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                        <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                             onClick={() => this.setState({new_marca: false, descripcion_marca: '', error_descripcionmarca: '', })}
                                         >
                                             Cancelar
@@ -777,6 +802,9 @@ class CreateServicio extends Component {
         );
     }
     render() {
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colorback = this.props.buttoncolor == '' ? 'focus' : this.props.buttoncolor;
         return (
             <div className="rows">
                 {this.onModalCategoria()}
@@ -788,7 +816,7 @@ class CreateServicio extends Component {
                             title="NUEVO PRODUCTO O SERVICIO"
                             headStyle={{fontSize: 14, }} bodyStyle={{padding: 4, paddingTop: 0, }}
                             extra={ 
-                                <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
+                                <button className={"btn-wide btn-outline-2x mr-md-2 btn-sm btn btn-outline-" + colorback}
                                     onClick={this.onBack.bind(this)}
                                 >
                                     Atras
@@ -801,7 +829,7 @@ class CreateServicio extends Component {
                                     <div className='cols-lg-4 cols-md-4 cols-sm-4 cols-xs-12'>
                                         <div className='inputs-groups'>
                                             <input type='text' readOnly
-                                                className={`forms-control title_form`} value={'ALMACEN'}
+                                                className={`forms-control title_form ${this.props.buttoncolor}`} value={'ALMACEN'}
                                             />
                                         </div>
                                     </div>
@@ -844,7 +872,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Codigo'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Codigo'}
                                                 />
                                             </div>
                                         </div>
@@ -868,7 +896,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-3 cols-md-3 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Descripcion'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Descripcion'}
                                                 />
                                             </div>
                                         </div>
@@ -894,7 +922,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Categoria'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Categoria'}
                                                 />
                                             </div>
                                         </div>
@@ -918,7 +946,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Marca'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Marca'}
                                                 />
                                             </div>
                                         </div>
@@ -944,7 +972,7 @@ class CreateServicio extends Component {
                                     <div className='cols-lg-4 cols-md-4 cols-sm-4 cols-xs-12'>
                                         <div className='inputs-groups'>
                                             <input type='text' readOnly
-                                                className={`forms-control title_form`} value={'STOCK'}
+                                                className={`forms-control title_form ${this.props.buttoncolor}`} value={'STOCK'}
                                             />
                                         </div>
                                     </div>
@@ -955,7 +983,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Actual'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Actual'}
                                                 />
                                             </div>
                                         </div>
@@ -964,7 +992,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Mínimo'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Mínimo'}
                                                 />
                                             </div>
                                         </div>
@@ -973,7 +1001,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Máximo'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Máximo'}
                                                 />
                                             </div>
                                         </div>
@@ -1147,7 +1175,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Comisión'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Comisión'}
                                                 />
                                             </div>
                                         </div>
@@ -1156,7 +1184,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Costo'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Costo'}
                                                 />
                                             </div>
                                         </div>
@@ -1165,7 +1193,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Tipo'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Tipo'}
                                                 />
                                             </div>
                                         </div>
@@ -1174,7 +1202,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Incremento'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Incremento'}
                                                 />
                                             </div>
                                         </div>
@@ -1183,7 +1211,7 @@ class CreateServicio extends Component {
                                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{paddingTop: 5,}}>
                                             <div className='inputs-groups'>
                                                 <input type='text' readOnly
-                                                    className={`forms-control title_form`} value={'Precio'}
+                                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Precio'}
                                                 />
                                             </div>
                                         </div>
@@ -1418,12 +1446,12 @@ class CreateServicio extends Component {
                                 </div>
                             </div>
                             <div className='forms-groups txts-center mt-4'>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                     onClick={this.onValidar.bind(this)}
                                 >
                                     Aceptar
                                 </button>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                     onClick={this.onBack.bind(this)}
                                 >
                                     Cancelar
@@ -1451,10 +1479,12 @@ class CreateServicio extends Component {
 
 CreateServicio.propTypes = {
     ventacreate: PropTypes.number,
+    buttoncolor: PropTypes.string,
 }
 
 CreateServicio.defaultProps = {
     ventacreate: 0,
+    buttoncolor: '',
 }
 
 export default withRouter(CreateServicio);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Vehiculo;
 use App\VehiculoImagen;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -251,6 +252,8 @@ class VehiculoController extends Controller
                     'from'         => $vehiculoyear->firstItem(),
                     'to'           => $vehiculoyear->lastItem(),
                 ],
+
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -264,6 +267,56 @@ class VehiculoController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->vehiculo = '1';
+            }
+            if ($bandera == 2) {
+                $data->vehiculocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->vehiculoedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->vehiculoshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->vehiculo = ( $data->vehiculo == null ) ? '1' : $data->vehiculo * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->vehiculocreate = ( $data->vehiculocreate == null ) ? '1' : $data->vehiculocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->vehiculoedit = ( $data->vehiculoedit == null ) ? '1' : $data->vehiculoedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->vehiculoshow = ( $data->vehiculoshow == null ) ? '1' : $data->vehiculoshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE VEHICULO: ' . $data->vehiculo;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO VEHICULO: ' . $data->vehiculocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR VEHICULO: ' . $data->vehiculoedit;
+        }
+        return ' DETALLE VEHICULO: ' . $data->vehiculoshow;
     }
 
     /**
@@ -307,6 +360,7 @@ class VehiculoController extends Controller
                 'marca' => $vehiculomarca,
                 'year' => $vehiculoyear,
                 'color' => $vehiculocolor,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -500,6 +554,7 @@ class VehiculoController extends Controller
                 'modelo' => $vehiculomodelo,
                 'data' => $data,
                 'imagen' => $imagen,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

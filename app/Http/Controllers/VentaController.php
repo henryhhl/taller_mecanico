@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DetalleVenta;
 use App\Venta;
+use App\Visitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -79,6 +80,7 @@ class VentaController extends Controller
                     'from'         => $data->firstItem(),
                     'to'           => $data->lastItem(),
                 ],
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -92,6 +94,47 @@ class VentaController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->mantenimiento = '1';
+            }
+            if ($bandera == 2) {
+                $data->mantenimientocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->mantenimientoshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->mantenimiento = ( $data->mantenimiento == null ) ? '1' : $data->mantenimiento * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->mantenimientocreate = ( $data->mantenimientocreate == null ) ? '1' : $data->mantenimientocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->mantenimientoshow = ( $data->mantenimientoshow == null ) ? '1' : $data->mantenimientoshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE MATENIMIENTO: ' . $data->mantenimiento;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO MANTENIMIENTO: ' . $data->mantenimientocreate;
+        }
+        return ' DETALLE MANTENIMIENTO: ' . $data->mantenimientoshow;
     }
 
     /**
@@ -120,6 +163,7 @@ class VentaController extends Controller
                 'response' => 1,
                 'nroventa' => $nroventa,
                 'articulo' =>$articulo,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {

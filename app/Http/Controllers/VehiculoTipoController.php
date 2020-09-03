@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\VehiculoTipo;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +66,56 @@ class VehiculoTipoController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->vehiculotipo = '1';
+            }
+            if ($bandera == 2) {
+                $data->vehiculotipocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->vehiculotipoedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->vehiculotiposhow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->vehiculotipo = ( $data->vehiculotipo == null ) ? '1' : $data->vehiculotipo * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->vehiculotipocreate = ( $data->vehiculotipocreate == null ) ? '1' : $data->vehiculotipocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->vehiculotipoedit = ( $data->vehiculotipoedit == null ) ? '1' : $data->vehiculotipoedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->vehiculotiposhow = ( $data->vehiculotiposhow == null ) ? '1' : $data->vehiculotiposhow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE VEHICULO TIPO: ' . $data->vehiculotipo;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO VEHICULO TIPO: ' . $data->vehiculotipocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR VEHICULO TIPO: ' . $data->vehiculotipoedit;
+        }
+        return ' DETALLE VEHICULO TIPO: ' . $data->vehiculotiposhow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -85,6 +136,7 @@ class VehiculoTipoController extends Controller
 
             return response()->json([
                 'response' => 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -192,6 +244,7 @@ class VehiculoTipoController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Ajuste;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -34,12 +35,13 @@ class HomeController extends Controller
                 $token = $session->token();
             }
 
+            $data = Ajuste::where('idusuario', '=', Auth::user()->id)->orderBy('id')->first();
+
             return response()->json([
                 'response' => 1,
                 'token'    => $token,
                 'usuario'  => Auth::user(),
-                // 'auth' => auth()->guard()->guest(),
-                // 'sesion'   => Auth::guest(),
+                'ajuste'   => $data,
             ]);
         } catch(\Exception $th) {
             return response()->json([

@@ -16,6 +16,8 @@ class CreateArticuloTable extends Migration
         Schema::create('articulo', function (Blueprint $table) {
             $table->increments('id');
             $table->string('descripcion');
+            $table->decimal('precio', 12, 2)->nullable();
+            $table->integer('stock')->nullable();
             $table->enum('estado', ['A', 'N'])->default('A');
             $table->date('fecha');
             $table->time('hora');

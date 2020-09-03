@@ -17,12 +17,13 @@ class CreateDetallearticuloTable extends Migration
             $table->increments('id');
             $table->integer('idventa')->unsigned();
             $table->integer('idarticulo')->unsigned();
-            $table->decimal('cantidad', 12, 2);
+            $table->integer('cantidad');
             $table->string('estadoarticulo')->nullable();
-            $table->string('observacion')->nullable();
+            $table->text('observacion')->nullable();
             $table->enum('estado', ['A', 'N'])->default('A');
             $table->date('fecha');
             $table->time('hora');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('idventa')->references('id')->on('venta')->ondelete('cascade');
             $table->foreign('idarticulo')->references('id')->on('articulo')->ondelete('cascade');

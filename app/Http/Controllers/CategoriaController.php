@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Categoria;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,56 @@ class CategoriaController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->categoria = '1';
+            }
+            if ($bandera == 2) {
+                $data->categoriacreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->categoriaedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->categoriashow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->categoria = ( $data->categoria == null ) ? '1' : $data->categoria * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->categoriacreate = ( $data->categoriacreate == null ) ? '1' : $data->categoriacreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->categoriaedit = ( $data->categoriaedit == null ) ? '1' : $data->categoriaedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->categoriashow = ( $data->categoriashow == null ) ? '1' : $data->categoriashow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE CATEGORIA: ' . $data->categoria;
+        }
+        if ($bandera == 2) {
+            return ' NUEVA CATEGORIA: ' . $data->categoriacreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR CATEGORIA: ' . $data->categoriaedit;
+        }
+        return ' DETALLE CATEGORIA: ' . $data->categoriashow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -83,6 +134,7 @@ class CategoriaController extends Controller
 
             return response()->json([
                 'response' => 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -196,6 +248,7 @@ class CategoriaController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $e) {

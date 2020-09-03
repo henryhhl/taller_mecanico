@@ -16,10 +16,11 @@ class CreateArticuloimagenTable extends Migration
         Schema::create('articuloimagen', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('iddetallearticulo')->unsigned();
-            $table->string('imagen');
+            $table->text('imagen');
             $table->enum('estado', ['A', 'N'])->default('A');
             $table->date('fecha');
             $table->time('hora');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('iddetallearticulo')->references('id')->on('detallearticulo')->ondelete('cascade');
         });

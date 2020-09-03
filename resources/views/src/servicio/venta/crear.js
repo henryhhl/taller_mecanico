@@ -155,8 +155,13 @@ class CreateVenta extends Component {
 
     }
     componentDidMount() {
-        this.props.get_link('venta');
+        var bandera = true;
         if (this.props.venta.create == 1) {
+            bandera = false;
+        }
+        this.props.get_link('venta', bandera);
+        if (this.props.venta.create == 1) {
+            this.props.loadingservice();
             this.setState({
                 array_vehiculo: this.props.venta.array_vehiculo,
                 nroventa: this.props.venta.nroventa,
@@ -199,19 +204,46 @@ class CreateVenta extends Component {
                             this.state.array_vehiculo.push(objeto_vehiculo);
                             this.state.array_serviciosselected.push(object_servicio);
                         }
+                        this.props.loadingservice(false, response.data.visitasitio);
                         this.setState({
                             nroventa: response.data.nroventa,
                             array_articulo: response.data.articulo,
                             array_vehiculo: this.state.array_vehiculo,
                             array_serviciosselected: this.state.array_serviciosselected,
                         });
+                        return;
                     }
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
             console.log(error)
         } );
@@ -989,7 +1021,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-3 cols-md-3 cols-sm-12 cols-xs-12 txts-center'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion'
-                                    className={`forms-control title_form`} value={'Cliente'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Cliente'}
                                     readOnly
                                 />
                             </div>
@@ -1021,7 +1053,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-3 cols-md-3 cols-sm-12 cols-xs-12 txts-center'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' 
-                                    className={`forms-control title_form`} value={'Fecha Venta'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Fecha Venta'}
                                     readOnly
                                 />
                             </div>
@@ -1049,11 +1081,10 @@ class CreateVenta extends Component {
                         <div className='cols-lg-7 cols-md-7 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <textarea type='text' placeholder='Ingresar Descripcion' 
-                                    style={{ background: '#1890ff', color: 'white', 
-                                        fontWeight: 'bold', textAlign: 'center', cursor: 'pointer', 
+                                    style={{ 
                                         height: 'auto', paddingTop: 8, paddingBottom: 2, maxHeight: 40,
                                     }}
-                                    className={`forms-control`} value={'Observaciones del vehiculo'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Observaciones del vehiculo'}
                                     readOnly
                                 />
                             </div>
@@ -1175,7 +1206,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12 txts-center'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' readOnly 
-                                    className={`forms-control title_form`} value={'DATOS DEL CLIENTE'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'DATOS DEL CLIENTE'}
                                 />
                                 {this.state.cliente_first.idcliente == null ? null : 
                                     <button className="btn-hover-shine btn btn-sm btn-danger fa fa-close"
@@ -1280,7 +1311,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' 
-                                    className={`forms-control title_form`} value={'Serie'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Serie'}
                                     readOnly
                                 />
                             </div>
@@ -1300,7 +1331,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' 
-                                    className={`forms-control title_form`} value={'Placa'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Placa'}
                                     readOnly
                                 />
                             </div>
@@ -1320,7 +1351,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' 
-                                    className={`forms-control title_form`} value={'Marca'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Marca'}
                                     readOnly
                                 />
                             </div>
@@ -1340,7 +1371,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' 
-                                    className={`forms-control title_form`} value={'Modelo'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Modelo'}
                                     readOnly
                                 />
                             </div>
@@ -1360,7 +1391,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' placeholder='Ingresar Descripcion' 
-                                    className={`forms-control title_form`} value={'Color'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Color'}
                                     readOnly
                                 />
                             </div>
@@ -1624,7 +1655,7 @@ class CreateVenta extends Component {
                     <div className='cols-lg-6 cols-md-6 cols-sm-12 cols-xs-12' style={{paddingBottom: 0, paddingTop: 0, }}>
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
-                                <input type='text' className={`forms-control title_form`} 
+                                <input type='text' className={`forms-control title_form ${this.props.buttoncolor}`} 
                                     value={'Mecanico'} readOnly
                                 />
                             </div>
@@ -1651,7 +1682,7 @@ class CreateVenta extends Component {
                     <div className='cols-lg-6 cols-md-6 cols-sm-12 cols-xs-12' style={{paddingBottom: 0, paddingTop: 0, }}>
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
-                                <input type='text' className={`forms-control title_form`} 
+                                <input type='text' className={`forms-control title_form ${this.props.buttoncolor}`} 
                                     value={'Servicio/Producto'} readOnly
                                 />
                             </div>
@@ -1688,12 +1719,12 @@ class CreateVenta extends Component {
                             <table className="tables-respons">
                                 <thead>
                                     <tr>
-                                        <td className='title_form'>DESCRIPCION</td>
-                                        <td className='title_form'>CANT</td>
-                                        <td className='title_form'>PREC UNIT</td>
-                                        <td className='title_form'>DESC</td>
-                                        <td className='title_form'>DETALLE</td>
-                                        <td className='title_form'>SUBTOTAL</td>
+                                        <td className={`title_form ${this.props.buttoncolor}`}>DESCRIPCION</td>
+                                        <td className={`title_form ${this.props.buttoncolor}`}>CANT</td>
+                                        <td className={`title_form ${this.props.buttoncolor}`}>PREC UNIT</td>
+                                        <td className={`title_form ${this.props.buttoncolor}`}>DESC</td>
+                                        <td className={`title_form ${this.props.buttoncolor}`}>DETALLE</td>
+                                        <td className={`title_form ${this.props.buttoncolor}`}>SUBTOTAL</td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1982,7 +2013,7 @@ class CreateVenta extends Component {
                             <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{padding: 0, paddingBottom: 10, paddingTop: 8, }}>
                                 <div className='inputs-groups'>
                                     <input type='text' placeholder='Ingresar Descripcion' readOnly 
-                                        className={`forms-control title_form`} value={'DATOS DEL CLIENTE'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'DATOS DEL CLIENTE'}
                                     />
                                 </div>
                             </div>
@@ -2045,7 +2076,7 @@ class CreateVenta extends Component {
                             <div className='cols-lg-12 cols-md-12 cols-sm-12 cols-xs-12' style={{padding: 0, paddingBottom: 10, paddingTop: 8, }}>
                                 <div className='inputs-groups'>
                                     <input type='text' placeholder='Ingresar Descripcion' readOnly 
-                                        className={`forms-control title_form`} value={'DATOS DEL MECANICO'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'DATOS DEL MECANICO'}
                                     />
                                 </div>
                             </div>
@@ -2100,7 +2131,7 @@ class CreateVenta extends Component {
                             <div className="forms-groups">
                                 <div className='cols-lg-6 cols-md-6 cols-sm-6 cols-xs-6' style={{padding: 0, }}>
                                     <div className='inputs-groups'>
-                                        <input type='text' className={`forms-control title_form`} 
+                                        <input type='text' className={`forms-control title_form ${this.props.buttoncolor}`} 
                                             value={'SUBTOTAL'} readOnly style={{textAlign: 'left', paddingLeft: 15, }}
                                         />
                                     </div>
@@ -2120,7 +2151,7 @@ class CreateVenta extends Component {
                             <div className="forms-groups">
                                 <div className='cols-lg-3 cols-md-3 cols-sm-3 cols-xs-3' style={{padding: 0, }}>
                                     <div className='inputs-groups'>
-                                        <input type='text' className={`forms-control title_form`} 
+                                        <input type='text' className={`forms-control title_form ${this.props.buttoncolor}`} 
                                             value={'DESC'} readOnly style={{textAlign: 'left', paddingLeft: 15, }}
                                         />
                                     </div>
@@ -2190,7 +2221,7 @@ class CreateVenta extends Component {
                             <div className="forms-groups">
                                 <div className='cols-lg-6 cols-md-6 cols-sm-6 cols-xs-6' style={{padding: 0, }}>
                                     <div className='inputs-groups'>
-                                        <input type='text' className={`forms-control title_form`} 
+                                        <input type='text' className={`forms-control title_form ${this.props.buttoncolor}`} 
                                             value={'TOTAL'} readOnly style={{textAlign: 'left', paddingLeft: 15, }}
                                         />
                                     </div>
@@ -2220,6 +2251,10 @@ class CreateVenta extends Component {
             tab1: this.cargar_general(),
             tab2: this.cargar_detalle(),
         };
+
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colorback = this.props.buttoncolor == '' ? 'focus' : this.props.buttoncolor;
 
         return (
             <div className="rows">
@@ -2294,7 +2329,7 @@ class CreateVenta extends Component {
                                                     }}
                                                 ></button>
                                             </Tooltip>
-                                            <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
+                                            <button className={"btn-wide btn-outline-2x mr-md-2 btn-sm btn btn-outline-" + colorback}
                                                 onClick={this.onBack.bind(this)}
                                             >
                                                 Atras
@@ -2309,12 +2344,12 @@ class CreateVenta extends Component {
                                 </Card>
                             </div>
                             <div className='forms-groups txts-center mt-4'>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                     onClick={this.onValidar.bind(this)}
                                 >
                                     Aceptar
                                 </button>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                     onClick={this.onBack.bind(this)}
                                 >
                                     Cancelar
@@ -2343,6 +2378,7 @@ class CreateVenta extends Component {
 
 CreateVenta.propTypes = {
     venta: PropTypes.object,
+    buttoncolor: PropTypes.string,
 }
 
 CreateVenta.defaultProps = {
@@ -2360,6 +2396,7 @@ CreateVenta.defaultProps = {
         descuento: 0,
         key: 'tab1',
     },
+    buttoncolor: '',
 }
 
 export default withRouter(CreateVenta);

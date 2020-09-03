@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\VehiculoYear;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,6 +73,56 @@ class VehiculoYearController extends Controller
         }
     }
 
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->year = '1';
+            }
+            if ($bandera == 2) {
+                $data->yearcreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->yearedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->yearshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->year = ( $data->year == null ) ? '1' : $data->year * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->yearcreate = ( $data->yearcreate == null ) ? '1' : $data->yearcreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->yearedit = ( $data->yearedit == null ) ? '1' : $data->yearedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->yearshow = ( $data->yearshow == null ) ? '1' : $data->yearshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE AÑO: ' . $data->year;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO AÑO: ' . $data->yearcreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR AÑO: ' . $data->yearedit;
+        }
+        return ' DETALLE AÑO: ' . $data->yearshow;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -92,6 +143,7 @@ class VehiculoYearController extends Controller
 
             return response()->json([
                 'response' => 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -205,6 +257,7 @@ class VehiculoYearController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {

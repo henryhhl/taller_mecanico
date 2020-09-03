@@ -18,6 +18,7 @@ class CreateDetallePermisoTable extends Migration
             $table->integer('idpermiso')->unsigned();
             $table->integer('idrol')->unsigned();
             $table->enum('estado', ['A', 'N'])->default('A');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('idpermiso')->references('id')->on('permiso')->ondelete('cascade');
             $table->foreign('idrol')->references('id')->on('rol')->ondelete('cascade');

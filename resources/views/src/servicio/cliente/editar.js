@@ -7,6 +7,8 @@ import { Card, Modal, Table, notification, Upload, message } from 'antd';
 import 'antd/dist/antd.css';
 import web from '../../utils/services';
 
+import PropTypes from 'prop-types';
+
 const tabList = [
     {
         key: 'tab1',
@@ -53,7 +55,7 @@ class EditarCliente extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('cliente');
+        this.props.get_link('cliente', true);
         this.get_data();
     }
     get_data() {
@@ -64,8 +66,8 @@ class EditarCliente extends Component {
                         this.props.logout();
                         return;
                     }
-                    console.log(response.data)
                     if (response.data.response == 1) {
+                        this.props.loadingservice(false, response.data.visitasitio);
                         this.setState({
                             nombre: response.data.data.nombre,
                             apellido: response.data.data.apellido == null ? '' : response.data.data.apellido,
@@ -81,14 +83,40 @@ class EditarCliente extends Component {
                             nrocliente: response.data.data.id,
                             array_vehiculo: response.data.vehiculo,
                         });
+                        return;
                     }
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             console.log(error)
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
         } );
     }
@@ -205,6 +233,7 @@ class EditarCliente extends Component {
         formdata.append('provincia', this.state.provincia);
         formdata.append('email', this.state.email);
         formdata.append('imagen', this.state.imagen);
+        formdata.append('foto', this.state.foto);
         formdata.append('bandera', this.state.bandera);
         formdata.append('id', this.props.match.params.id);
 
@@ -298,7 +327,7 @@ class EditarCliente extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' readOnly
-                                    className={`forms-control title_form`} value={'Nro. cliente'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nro. cliente'}
                                 />
                             </div>
                         </div>
@@ -323,7 +352,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Nombre'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nombre'}
                                     />
                                 </div>
                             </div>
@@ -347,7 +376,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Apellido'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Apellido'}
                                     />
                                 </div>
                             </div>
@@ -372,7 +401,7 @@ class EditarCliente extends Component {
                         <div className='cols-lg-2 cols-md-2 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' readOnly
-                                    className={`forms-control title_form`} value={'Empresa'}
+                                    className={`forms-control title_form ${this.props.buttoncolor}`} value={'Empresa'}
                                 />
                             </div>
                         </div>
@@ -397,7 +426,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Direccion'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Direccion'}
                                     />
                                 </div>
                             </div>
@@ -421,7 +450,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Ciudad'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Ciudad'}
                                     />
                                 </div>
                             </div>
@@ -450,7 +479,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Prov.'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Prov.'}
                                     />
                                 </div>
                             </div>
@@ -471,7 +500,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Nit'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Nit'}
                                     />
                                 </div>
                             </div>
@@ -495,7 +524,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Telefono'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Telefono'}
                                     />
                                 </div>
                             </div>
@@ -519,7 +548,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-5 cols-md-5 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Celular'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Celular'}
                                     />
                                 </div>
                             </div>
@@ -545,7 +574,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Email'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Email'}
                                     />
                                 </div>
                             </div>
@@ -569,7 +598,7 @@ class EditarCliente extends Component {
                             <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                                 <div className='inputs-groups'>
                                     <input type='text' readOnly
-                                        className={`forms-control title_form`} value={'Imagen'}
+                                        className={`forms-control title_form ${this.props.buttoncolor}`} value={'Imagen'}
                                     />
                                 </div>
                             </div>
@@ -642,6 +671,9 @@ class EditarCliente extends Component {
             tab1: this.data_general(),
             tab2: this.data_vehiculo(),
         };
+        var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
+        var colordanger = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
+        var colorback = this.props.buttoncolor == '' ? 'focus' : this.props.buttoncolor;
         return (
             <div className="rows">
                 <div className="cards">
@@ -653,7 +685,7 @@ class EditarCliente extends Component {
                                 title="EDITAR CLIENTE"
                                 headStyle={{fontSize: 14, }}
                                 bodyStyle={{padding: 4, paddingTop: 0, }}
-                                extra={ <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
+                                extra={ <button className={"btn-wide btn-outline-2x mr-md-2 btn-sm btn btn-outline-" + colorback}
                                         onClick={this.onBack.bind(this)}
                                     >
                                         Atras
@@ -668,12 +700,12 @@ class EditarCliente extends Component {
                             </Card>
 
                             <div className='forms-groups txts-center mt-2'>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-primary"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colorsuccess}
                                     onClick={this.onValidar.bind(this)}
                                 >
                                     Aceptar
                                 </button>
-                                <button className="mb-2 mr-2 btn-hover-shine btn btn-danger"
+                                <button className={"mb-2 mr-2 btn-hover-shine btn btn-" + colordanger}
                                     onClick={this.onBack.bind(this)}
                                 >
                                     Cancelar
@@ -697,6 +729,14 @@ class EditarCliente extends Component {
             </div>
         );
     }
+}
+
+EditarCliente.propTypes = {
+    buttoncolor: PropTypes.string,
+}
+
+EditarCliente.defaultProps = {
+    buttoncolor: '',
 }
 
 export default withRouter(EditarCliente);

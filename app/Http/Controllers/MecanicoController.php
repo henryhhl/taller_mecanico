@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mecanico;
+use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +63,7 @@ class MecanicoController extends Controller
                     'from'         => $data->firstItem(),
                     'to'           => $data->lastItem(),
                 ],
+                'visitasitio' => $this->getvisitasitio(1),
             ]);
 
         }catch(\Exception $th) {
@@ -75,6 +77,56 @@ class MecanicoController extends Controller
                 ]
             ]);
         }
+    }
+
+    public function getvisitasitio($bandera) {
+
+        $mensaje = '';
+
+        if ( is_null( Visitas::first() ) ) {
+
+            $data = new Visitas();
+            if ($bandera == 1) {
+                $data->mecanico = '1';
+            }
+            if ($bandera == 2) {
+                $data->mecanicocreate = '1';
+            }
+            if ($bandera == 3) {
+                $data->mecanicoedit = '1';
+            }
+            if ($bandera == 4) {
+                $data->mecanicoshow = '1';
+            }
+            $data->save();
+
+        } else {
+            $data = Visitas::first();
+            if ($bandera == 1) {
+                $data->mecanico = ( $data->mecanico == null ) ? '1' : $data->mecanico * 1 + 1;
+            }
+            if ($bandera == 2) {
+                $data->mecanicocreate = ( $data->mecanicocreate == null ) ? '1' : $data->mecanicocreate * 1 + 1;
+            }
+            if ($bandera == 3) {
+                $data->mecanicoedit = ( $data->mecanicoedit == null ) ? '1' : $data->mecanicoedit * 1 + 1;
+            }
+            if ($bandera == 4) {
+                $data->mecanicoshow = ( $data->mecanicoshow == null ) ? '1' : $data->mecanicoshow * 1 + 1;
+            }
+            $data->update();
+        }
+
+        if ($bandera == 1) {
+            return ' LISTADO DE MECANICO: ' . $data->mecanico;
+        }
+        if ($bandera == 2) {
+            return ' NUEVO MECANICO: ' . $data->mecanicocreate;
+        }
+        if ($bandera == 3) {
+            return ' EDITAR MECANICO: ' . $data->mecanicoedit;
+        }
+        return ' DETALLE MECANICO: ' . $data->mecanicoshow;
     }
 
     public function search_name(Request $request)
@@ -152,6 +204,7 @@ class MecanicoController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => sizeof($data) + 1,
+                'visitasitio' => $this->getvisitasitio(2),
             ]);
 
         }catch(\Exception $th) {
@@ -220,7 +273,7 @@ class MecanicoController extends Controller
             $data->celular = $celular;
             $data->email = $email;
             $data->ci = $ci;
-            $data->imagen = $rutadelarchivo;
+            $data->imagen = $request->input('foto');
             $data->estado = 'A';
             $data->fecha = $mytime->toDateString();
             $data->hora = $mytime->toTimeString();
@@ -285,6 +338,7 @@ class MecanicoController extends Controller
             return response()->json([
                 'response' => 1,
                 'data' => $data,
+                'visitasitio' => $this->getvisitasitio(3),
             ]);
 
         }catch(\Exception $th) {
@@ -356,7 +410,7 @@ class MecanicoController extends Controller
             $data->email = $email;
             $data->ci = $ci;
             if ($bandera == 1) {
-                $data->imagen = $rutadelarchivo;
+                $data->imagen = $request->input('foto');
             }
             $data->update();
 

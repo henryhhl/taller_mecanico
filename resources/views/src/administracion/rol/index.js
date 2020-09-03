@@ -4,9 +4,12 @@ import axios from 'axios';
 import {withRouter, Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { Pagination, notification } from 'antd';
+
+import { Pagination, notification, Modal } from 'antd';
 import 'antd/dist/antd.css';
 import web from '../../utils/services';
+import { isPermission } from '../../utils/functions';
+import permissions from '../../utils/permisions';
 
 class IndexRol extends Component {
 
@@ -33,14 +36,40 @@ class IndexRol extends Component {
                         return;
                     }
                     if (response.data.response == 1) {
-                        this.props.getrol(response.data.data.data, response.data.pagination, page);
+                        this.props.getrol(response.data.data.data, response.data.pagination, page, response.data.visitasitio);
+                        return;
                     }
                 }
+                Modal.error({
+                    title: 'ERROR DE COMUNICACIÓN',
+                    content: (
+                        <div>
+                            <p>Ha habido un error de comunicación</p>
+                            <p>Favor de intentar nuevamente</p>
+                        </div>
+                    ),
+                    onOk: () => this.get_data(),
+                    zIndex: 1500,
+                    centered: true,
+                });
             }
         ).catch( error => {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
             if (error.response.status == 401) {
                 this.setState({ auth: true, });
@@ -83,6 +112,9 @@ class IndexRol extends Component {
         this.setState({ timeoutSearch: this.state.timeoutSearch});
     }
     render() {
+        var color = this.props.buttoncolor == '' ? 'outline-focus' : this.props.buttoncolor;
+        var optioneditar = this.props.buttoncolor == '' ? 'primary' : 'outline-' + this.props.buttoncolor;
+        var optiondelete = this.props.buttoncolor == '' ? 'danger' : 'outline-' + this.props.buttoncolor;
         return (
             <div className="rows">
                 <div className="cards">
@@ -103,11 +135,13 @@ class IndexRol extends Component {
                             </div>      
                         </div>
                         <div className="btn-actions-pane-right text-capitalize mb-4">
-                            <button className="btn-wide btn-outline-2x mr-md-2 btn btn-outline-focus btn-sm"
-                                onClick={this.onAdd.bind(this)}
-                            >
-                                Nuevo
-                            </button>
+                            { isPermission(this.props.permisos_habilitados, permissions.rolcreate) ?
+                                <button className={"btn-wide btn-outline-2x mr-md-2 btn btn-sm btn-" + color }
+                                    onClick={this.onAdd.bind(this)}
+                                >
+                                    Nuevo
+                                </button> : null 
+                            }
                         </div>
                     </div>
                     <div className="forms-groups">
@@ -133,16 +167,20 @@ class IndexRol extends Component {
                                                     {data.nombre}
                                                 </td>
                                                 <td>
-                                                <button className="mb-2 mr-2 btn-hover-shine btn btn-xs btn-primary"
-                                                    onClick={this.onEdit.bind(this, data)}
-                                                >
-                                                    <i className='fa fa-edit'></i>
-                                                </button>
-                                                <button className="mb-2 mr-2 btn-hover-shine btn btn-xs btn-danger"
-                                                    onClick={this.onDelete.bind(this, data)}
-                                                >
-                                                    <i className='fa fa-trash'></i>
-                                                </button>
+                                                { isPermission(this.props.permisos_habilitados, permissions.roleditar) ?
+                                                    <button className={"mb-2 mr-2 btn-hover-shine btn btn-xs btn-" + optioneditar }
+                                                        onClick={this.onEdit.bind(this, data)}
+                                                    >
+                                                        <i className='fa fa-edit'></i>
+                                                    </button> : null 
+                                                }
+                                                { isPermission(this.props.permisos_habilitados, permissions.roldelete) ?
+                                                    <button className={"mb-2 mr-2 btn-hover-shine btn btn-xs btn-" + optiondelete}
+                                                        onClick={this.onDelete.bind(this, data)}
+                                                    >
+                                                        <i className='fa fa-trash'></i>
+                                                    </button> : null 
+                                                }
                                                 </td>
                                             </tr>
                                         )
@@ -172,6 +210,8 @@ IndexRol.propTypes = {
     rol: PropTypes.array,
     pagination: PropTypes.object,
     paginate: PropTypes.object,
+    buttoncolor: PropTypes.string,
+    permisos_habilitados: PropTypes.array,
 }
 
 IndexRol.defaultProps = {
@@ -190,6 +230,8 @@ IndexRol.defaultProps = {
     paginate: {
         rol: 1,
     },
+    buttoncolor: '',
+    permisos_habilitados: [],
 }
 
 export default withRouter(IndexRol);

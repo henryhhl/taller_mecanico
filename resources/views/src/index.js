@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import axios from 'axios';
 
-import { notification, Drawer } from 'antd';
+import { notification, Drawer, Affix, Button, Modal } from 'antd';
 import 'antd/dist/antd.css';
 
 import Header from './layouts/header';
@@ -62,18 +62,35 @@ import EditarCategoria from './servicio/categoria/editar';
 
 import Asignar_Permiso from './administracion/permiso/asignar';
 
+import IndexPromocion from './servicio/promocion';
+import CreatePromocion from './servicio/promocion/crear';
+import EditarPromocion from './servicio/promocion/editar';
+
 import { logo } from './utils/logo';
 import web from './utils/services';
+import Footer from './layouts/footer';
+import Ajuste from './ajuste';
+import Perfil from './perfil';
 
 
 const objeto_vehiculo = { idvehiculo: null, placa: '',
     marca: '', modelo: '', color: '', serie: '',
 };
 
+/* marcas realizados en el mantenimientos, servicios,  */
+
 export default class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+
+            layoutoption: {sidebarcolor: '', headercolor: '', footercolor: '',
+                plantillacolor: '', buttoncolor: '', sizetext: '',
+            },
+
+            permisos_habilitados: [],
+
+            visitasitio: '',
             namedelete: '',
             iddelete: null,
 
@@ -81,15 +98,16 @@ export default class Index extends Component {
             visible_drawer: false,
             loading: false,
 
-            sesion: true,
+            sesion: false,
 
             token: '',
             auth: false,
             
             usuario: {
-                nombre: '',
-                imagen: '',
-                apellido: '',
+                id: '', nombre: '',
+                apellido: '', nacimiento: '',
+                usuario: '', imagen: '', genero: 'N',
+                email: '', rol: '', descripcion: '',
             },
 
             paginate: {
@@ -98,7 +116,7 @@ export default class Index extends Component {
                 vehiculo: 1, tipo: 1, marca: 1,
                 modelo: 1, color: 1, year: 1,
                 producto: 1, categoria: 1,
-                articulo: 1, venta: 1,
+                articulo: 1, venta: 1, promocion: 1,
             },
 
             pagination: {
@@ -172,6 +190,11 @@ export default class Index extends Component {
                     'per_page': 0, 'last_page': 0,
                     'from': 0, 'to': 0,
                 },
+                promocion: {
+                    'total': 0, 'current_page': 0,
+                    'per_page': 0, 'last_page': 0,
+                    'from': 0, 'to': 0,
+                },
             },
 
             array_rol: [],
@@ -192,6 +215,7 @@ export default class Index extends Component {
 
             array_usuario: [],
             array_venta: [],
+            array_promocion: [],
 
             activeKey: {
                 vehiculo: '1', almacen: '1',
@@ -213,6 +237,7 @@ export default class Index extends Component {
                 mecanico: '',
                 vehiculo: '',
                 almacen: '',
+                promocion: '',
             },
 
             vehiculo_create: {
@@ -255,13 +280,23 @@ export default class Index extends Component {
         this.get_data();
     }
     get_data() {
-        axios.get( web.servidor + '/home/get_information').then(
+        axios.get( web.servidor + '/usuario/get_information').then(
             (response) => {
-                // console.log(response)
                 if (response.data.response == 1) {
+                    if (response.data.ajuste != null) {
+                        this.state.layoutoption.headercolor = response.data.ajuste.colorheader == null ? '' : response.data.ajuste.colorheader;
+                        this.state.layoutoption.sidebarcolor = response.data.ajuste.colorsidebar == null ? '' : response.data.ajuste.colorsidebar;
+                        this.state.layoutoption.footercolor = response.data.ajuste.colorfooter == null ? '' : response.data.ajuste.colorfooter;
+                        this.state.layoutoption.buttoncolor = response.data.ajuste.colorgeneral == null ? '' : response.data.ajuste.colorgeneral;
+                        this.state.layoutoption.sizetext = response.data.ajuste.sizetext == null ? '' : response.data.ajuste.sizetext;
+                    }
+                    console.log(response.data)
                     this.setState({
                         token: response.data.token,
                         usuario: response.data.usuario,
+                        layoutoption: this.state.layoutoption,
+                        sesion: true,
+                        permisos_habilitados: response.data.permiso,
                     });
                 }
             }
@@ -270,8 +305,26 @@ export default class Index extends Component {
             notification.error({
                 message: 'ERROR',
                 description: 'HUBO UN ERROR AL SOLICITAR SERVICIO FAVOR DE REVISAR CONEXION.',
+                zIndex: 1200,
+            });
+            Modal.error({
+                title: 'ERROR DE COMUNICACIÓN',
+                content: (
+                    <div>
+                        <p>Ha habido un error de comunicación</p>
+                        <p>Favor de intentar nuevamente</p>
+                    </div>
+                ),
+                onOk: () => this.get_data(),
+                zIndex: 1500,
+                centered: true,
             });
         } );
+    }
+    updatePerfil(data) {
+        this.setState({
+            usuario: data,
+        });
     }
     vehiculocreate(data) {
         this.setState({ vehiculo_create: data, });
@@ -394,16 +447,18 @@ export default class Index extends Component {
             this.setState({ venta_create: this.state.venta_create, });
         }
     }
-    getusuario(data, pagination, page) {
+    getusuario(data, pagination, page, visitasitio = '') {
         this.state.pagination.usuario = pagination;
         this.state.paginate.usuario = page;
         this.setState({
             array_usuario: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: visitasitio,
         });
     }
-    getrol(data, pagination, page) {
+    getrol(data, pagination, page, visitasitio = '') {
         this.state.pagination.rol = pagination;
         this.state.paginate.rol = page;
         this.setState({
@@ -411,115 +466,150 @@ export default class Index extends Component {
             pagination: this.state.pagination,
             paginate: this.state.paginate,
             visible_drawer: false,
+            visitasitio: visitasitio,
         });
     }
-    getcliente(data, pagination, page) {
+    getcliente(data, pagination, page, visitasitio = '') {
         this.state.pagination.cliente = pagination;
         this.state.paginate.cliente = page;
         this.setState({
             array_cliente: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: visitasitio,
         });
     }
-
-    getvehiculo(data, pagination, page) {
+    getvehiculo(data, pagination, page, visitasitio = '') {
         this.state.pagination.vehiculo = pagination;
         this.state.paginate.vehiculo = page;
         this.setState({
             array_vehiculo: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getvehiculotipo(data, pagination, page) {
+    getvehiculotipo(data, pagination, page, visitasitio = '') {
         this.state.pagination.tipo = pagination;
         this.state.paginate.tipo = page;
         this.setState({
             array_vehiculotipo: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getvehiculomarca(data, pagination, page) {
+    getvehiculomarca(data, pagination, page, visitasitio = '') {
         this.state.pagination.marca = pagination;
         this.state.paginate.marca = page;
         this.setState({
             array_vehiculomarca: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getvehiculomodelo(data, pagination, page) {
+    getvehiculomodelo(data, pagination, page, visitasitio = '') {
         this.state.pagination.modelo = pagination;
         this.state.paginate.modelo = page;
         this.setState({
             array_vehiculomodelo: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getvehiculocolor(data, pagination, page) {
+    getvehiculocolor(data, pagination, page, visitasitio = '') {
         this.state.pagination.color = pagination;
         this.state.paginate.color = page;
         this.setState({
             array_vehiculocolor: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getvehiculoyear(data, pagination, page) {
+    getvehiculoyear(data, pagination, page, visitasitio = '') {
         this.state.pagination.year = pagination;
         this.state.paginate.year = page;
         this.setState({
             array_vehiculoyear: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getmecanico(data, pagination, page) {
+    getmecanico(data, pagination, page, visitasitio = '') {
         this.state.pagination.mecanico = pagination;
         this.state.paginate.mecanico = page;
         this.setState({
             array_mecanico: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: visitasitio,
         });
     }
-    getservicio(data, pagination, page) {
+    getservicio(data, pagination, page, visitasitio = '') {
         this.state.pagination.producto = pagination;
         this.state.paginate.producto = page;
         this.setState({
             array_servicio: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getcategoria(data, pagination, page) {
+    getcategoria(data, pagination, page, visitasitio = '') {
         this.state.pagination.categoria = pagination;
         this.state.paginate.categoria = page;
         this.setState({
             array_categoria: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getarticulo(data, pagination, page) {
+    getarticulo(data, pagination, page, visitasitio = '') {
         this.state.pagination.articulo = pagination;
         this.state.paginate.articulo = page;
         this.setState({
             array_articulo: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: (visitasitio == '') ? this.state.visitasitio : visitasitio,
         });
     }
-    getventa(data, pagination, page) {
+    getventa(data, pagination, page, visitasitio = '') {
         this.state.pagination.venta = pagination;
         this.state.paginate.venta = page;
         this.setState({
             array_venta: data,
             pagination: this.state.pagination,
             paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: visitasitio,
+        });
+    }
+    getpromocion(data, pagination, page, visitasitio = '') {
+        this.state.pagination.promocion = pagination;
+        this.state.paginate.promocion = page;
+        this.setState({
+            array_promocion: data,
+            pagination: this.state.pagination,
+            paginate: this.state.paginate,
+            visible_drawer: false,
+            visitasitio: visitasitio,
         });
     }
     onModalActive(data, namedelete) {
@@ -574,6 +664,9 @@ export default class Index extends Component {
         }
         if (this.state.namedelete == 'usuario') {
             this.deleteusuario();
+        }
+        if (this.state.namedelete == 'promocion') {
+            this.deletepromocion();
         }
     }
     deletevehiculotipo(page = 1) {
@@ -1146,6 +1239,53 @@ export default class Index extends Component {
             }
         );
     }
+    deletepromocion(page = 1) {
+        var formdata = new FormData();
+        formdata.append('idpromocion', this.state.iddelete);
+        axios(
+            {
+                method: 'post',
+                url: web.servidor + '/promocion/delete?page=' + page,
+                data: formdata,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'enctype' : 'multipart/form-data',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                }
+            }
+        ).then(
+            response => {
+                if (response.data.response == 1) {
+                    notification.success({
+                        message: 'SUCCESS',
+                        description: 'EXITO EN ELIMINAR PROMOCION.',
+                    });
+                    this.state.pagination.promocion = response.data.pagination;
+                    this.state.paginate.promocion = page;
+                    this.setState({
+                        array_promocion: response.data.data.data,
+                        pagination: this.state.pagination,
+                        paginate: this.state.paginate,
+                    });
+                }
+                if (response.data.response == -1) {
+                    notification.warning({
+                        message: 'WARNING',
+                        description: 'NO SE PUDO ELIMINAR YA QUE EXISTE UNA TRANSACCION REALIZADA.',
+                    });
+                }
+                this.onCloseModal();
+            }
+        ).catch(
+            error => {
+                notification.error({
+                    message: 'ERROR',
+                    description: 'HUBO PROBLEMA AL REALIZAR LA SOLICITUD.',
+                });
+                this.onCloseModal();
+            }
+        );
+    }
     onCloseModal() {
         this.setState({
             visible: false,
@@ -1180,6 +1320,7 @@ export default class Index extends Component {
         this.state.link.mecanico = '';
         this.state.link.vehiculo = '';
         this.state.link.almacen = '';
+        this.state.link.promocion = '';
         this.state.link.asignar_permiso = '';
 
         if (link == 'home') {
@@ -1218,10 +1359,23 @@ export default class Index extends Component {
             this.state.menu.servicio = 'mm-active';
             this.state.link.almacen = 'mm-active';
         }
+        if (link == 'promocion') {
+            this.state.menu.servicio = 'mm-active';
+            this.state.link.promocion = 'mm-active';
+        }
         this.setState({
             menu: this.state.menu,
             link: this.state.link,
             visible_drawer: bandera,
+        });
+    }
+    loadingservice(bandera = false, visitasitio = '') {
+        if (bandera) {
+            return;
+        }
+        this.setState({
+            visible_drawer: false,
+            visitasitio: visitasitio,
         });
     }
     onLogout() {
@@ -1234,13 +1388,39 @@ export default class Index extends Component {
             document.getElementById('redirect_login').click();
         }, 3000);
     }
+
+    onSelectColorHeader(data) {
+        this.state.layoutoption.headercolor = data;
+        this.setState({ layoutoption: this.state.layoutoption });
+    }
+    onSelectColorSidebar(data) {
+        this.state.layoutoption.sidebarcolor = data;
+        this.setState({ layoutoption: this.state.layoutoption });
+    }
+    onSelectColorFooter(data) {
+        this.state.layoutoption.footercolor = data;
+        this.setState({ layoutoption: this.state.layoutoption });
+    }
+    onSelectColorButton(data) {
+        this.state.layoutoption.buttoncolor = data;
+        this.setState({ layoutoption: this.state.layoutoption });
+    }
+    onSelectSizeLetra(data) {
+        this.state.layoutoption.sizetext = data;
+        this.setState({ layoutoption: this.state.layoutoption });
+    }
+    /*
+     analisis externo
+        politico
+        economico
+    */
     render() {
         if (!this.state.sesion) {
             return (
                 <div className='app-container app-theme-white body-tabs-shadow fixed-header fixed-sidebar' 
                     style={{display: 'flex', justifyContent: 'center', alignItems: 'center',}}
                 >
-                    <a href={ web.serv_link + "/login"} id='redirect_login' style={{display: 'none',}}> </a>
+                    <a href={ web.home + "/login"} id='redirect_login' style={{display: 'none',}}> </a>
                     <div className='loaders-wrappers d-flexs justifys-contents-centers aligns-items-centers'>
                         <div className='loaders'>
                             <div className='balls-scales-ripples-multiples'>
@@ -1256,18 +1436,27 @@ export default class Index extends Component {
         return (
             
             <BrowserRouter>
-                <div className="app-container app-theme-white body-tabs-shadow fixed-header fixed-sidebar">
+                <div className="app-container app-theme-white body-tabs-shadow fixed-header fixed-sidebar fixed-footer">
                     {/* <form action="/logout" method="post" id='cerrar_sesion' style={{display: 'none', }}>
-                        <input type="hidden" name="_token" value={this.state.token} />
+                        <input type="hidden" name="_token" value={this.state.token} /> fixed-footer
                     </form> */}
                     
-                    <Header usuario={this.state.usuario} token={this.state.token} />
+                    <Header 
+                        usuario={this.state.usuario} token={this.state.token}
+                        headercolor={this.state.layoutoption.headercolor} 
+                    />
+
                     <div className="app-main">
+
                         <Sidebar 
                             menu_active={this.state.menu}
                             link_active={this.state.link}
                             init={this.init.bind(this)}
+                            sidebarcolor={this.state.layoutoption.sidebarcolor}
+                            sizetext={this.state.layoutoption.sizetext}
+                            permisos_habilitados={this.state.permisos_habilitados}
                         />
+
                         <div className="app-main__outer">
                             <div className="app-main__inner">
                                 <div className="app-page-title">
@@ -1275,7 +1464,35 @@ export default class Index extends Component {
                                     <Route exact path={ web.home + '/home'} 
                                         render={props => 
                                             <Home get_link={this.get_link.bind(this)} 
+                                                logout={this.onLogout.bind(this)}
+                                                { ...props} 
+                                            />
+                                        } 
+                                    />
 
+                                    <Route exact path={ web.serv_link + '/ajuste' } 
+                                        render={ props => 
+                                            <Ajuste { ...props} logout={this.onLogout.bind(this)}  
+                                                onSelectColorHeader={this.onSelectColorHeader.bind(this)}  
+                                                onSelectColorSidebar={this.onSelectColorSidebar.bind(this)}
+                                                onSelectColorFooter={this.onSelectColorFooter.bind(this)}
+                                                onSelectColorButton={this.onSelectColorButton.bind(this)}
+                                                onSelectSizeLetra={this.onSelectSizeLetra.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                get_link={this.get_link.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
+                                                sizetext={this.state.layoutoption.sizetext}
+                                            /> 
+                                        }
+                                    />
+                                    <Route exact path={ web.serv_link + '/perfil'} 
+                                        render={props => 
+                                            <Perfil 
+                                                get_link={this.get_link.bind(this)} 
+                                                logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
+                                                updatePerfil={this.updatePerfil.bind(this)}
                                                 { ...props} 
                                             />
                                         } 
@@ -1292,18 +1509,25 @@ export default class Index extends Component {
                                             get_link={this.get_link.bind(this)}
                                             logout={this.onLogout.bind(this)}
 
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
+
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/usuario/edit/:id' }
                                         render={props => 
                                             <EditarUsuario get_link={this.get_link.bind(this)} { ...props} 
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />                                    
                                     <Route exact path={ web.serv_link + '/usuario/create' }
                                         render={props => 
                                             <CreateUsuario get_link={this.get_link.bind(this)} { ...props} 
+                                                loadingservice={this.loadingservice.bind(this)}
                                                 logout={this.onLogout.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
 
@@ -1318,6 +1542,8 @@ export default class Index extends Component {
 
                                             get_link={this.get_link.bind(this)}
                                             logout={this.onLogout.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
 
                                         />} 
                                     />
@@ -1325,12 +1551,16 @@ export default class Index extends Component {
                                         render={props => 
                                             <CreateRol get_link={this.get_link.bind(this)} { ...props} 
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
                                     <Route exact path={ web.serv_link + '/rol/edit/:id'} 
                                         render={props => 
                                             <EditarRol get_link={this.get_link.bind(this)} { ...props} 
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
 
@@ -1339,6 +1569,8 @@ export default class Index extends Component {
                                         render={props => <Asignar_Permiso 
                                             get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1347,18 +1579,23 @@ export default class Index extends Component {
                                         <IndexVehiculoTipo getvehiculotipo={this.getvehiculotipo.bind(this)}
                                             vehiculotipo={this.state.array_vehiculotipo}
                                             onModalActive={this.onModalActive.bind(this)} { ...props} 
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo_tipo/create'} 
                                         render={props => 
                                         <CreateVehiculoTipo get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo_tipo/editar/:id' }
                                         render={props => 
                                         <EditarVehiculoTipo get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1375,6 +1612,8 @@ export default class Index extends Component {
                                             logout={this.onLogout.bind(this)}
 
                                             onModalActive={this.onModalActive.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/cliente/create' }
@@ -1384,12 +1623,16 @@ export default class Index extends Component {
                                                 vehiculocreate={this.state.vehiculo_create.create}
                                                 ventacreate={this.state.venta_create.create}
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
                                     <Route exact path={ web.serv_link + '/cliente/editar/:id'} 
                                         render={props => 
                                         <EditarCliente get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1420,6 +1663,8 @@ export default class Index extends Component {
                                             activeKeyVehiculo={this.activeKeyVehiculo.bind(this)}
 
                                             onModalActive={this.onModalActive.bind(this)} { ...props}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo/create' }
@@ -1432,6 +1677,8 @@ export default class Index extends Component {
                                                 onStoreVehiculo={this.onStoreVehiculo.bind(this)}
                                                 initvehiculo={this.initvehiculo.bind(this)}
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />
                                         } 
                                     />
@@ -1442,6 +1689,8 @@ export default class Index extends Component {
                                                 initvehiculo={this.initvehiculo.bind(this)}
                                                 vehiculo={this.state.vehiculo_create}
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
 
@@ -1449,12 +1698,16 @@ export default class Index extends Component {
                                         render={props => 
                                         <CreateVehiculoMarca get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo_marca/editar/:id'} 
                                         render={props => 
                                         <EditarVehiculoMarca get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1462,12 +1715,16 @@ export default class Index extends Component {
                                         render={props => 
                                         <CreateVehiculoModelo get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo_modelo/editar/:id'} 
                                         render={props => 
                                         <EditarVehiculoModelo get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1475,12 +1732,16 @@ export default class Index extends Component {
                                         render={props => 
                                         <CreateVehiculoColor get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo_color/editar/:id'} 
                                         render={props => 
                                         <EditarVehiculoColor get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1488,12 +1749,16 @@ export default class Index extends Component {
                                         render={props => 
                                         <CreateVehiculoYear get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/vehiculo_year/editar/:id'} 
                                         render={props => 
                                         <EditarVehiculoYear get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1510,6 +1775,8 @@ export default class Index extends Component {
                                             logout={this.onLogout.bind(this)}
 
                                             onModalActive={this.onModalActive.bind(this)} { ...props}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/mecanico/create'} 
@@ -1518,12 +1785,16 @@ export default class Index extends Component {
                                             onStoreMecanico={this.onStoreMecanico.bind(this)}
                                             ventacreate={this.state.venta_create.create}
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     /> 
                                     <Route exact path={ web.serv_link + '/mecanico/editar/:id'} 
                                         render={props => 
                                         <EditarMecanico get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1545,6 +1816,8 @@ export default class Index extends Component {
 
                                             activeKey={this.state.activeKey.almacen}
                                             activeKeyAlmacen={this.activeKeyAlmacen.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/almacen/create'} 
@@ -1553,6 +1826,8 @@ export default class Index extends Component {
                                                 onStoreServicio={this.onStoreServicio.bind(this)}
                                                 ventacreate={this.state.venta_create.create}
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />
                                         } 
                                     />
@@ -1560,6 +1835,8 @@ export default class Index extends Component {
                                         render={props => 
                                             <EditarServicio get_link={this.get_link.bind(this)} { ...props} 
                                                 logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
 
@@ -1568,12 +1845,16 @@ export default class Index extends Component {
                                         render={props => 
                                         <CreateCategoria get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/categoria/editar/:id'} 
                                         render={props => 
                                         <EditarCategoria get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1581,18 +1862,23 @@ export default class Index extends Component {
                                         <IndexArticulo articulo={this.state.array_articulo} 
                                             getarticulo={this.getarticulo.bind(this)}
                                             onModalActive={this.onModalActive.bind(this)} { ...props} 
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/articulo/create'} 
                                         render={props => 
                                         <CreateArticulo get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/articulo/editar/:id'} 
                                         render={props => 
                                         <EditarArticulo get_link={this.get_link.bind(this)} { ...props}
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
@@ -1608,6 +1894,9 @@ export default class Index extends Component {
                                             get_link={this.get_link.bind(this)}
                                             logout={this.onLogout.bind(this)}
 
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
+
                                         />} 
                                     />
                                     <Route exact path={ web.serv_link + '/mantenimiento/create'} render={props => 
@@ -1617,11 +1906,51 @@ export default class Index extends Component {
                                             ventacreate={this.ventacreate.bind(this)}
                                             initventa={this.initventa.bind(this)}
                                             logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+
+                                    <Route exact path={ web.serv_link + '/promocion'} render={props => 
+                                        <IndexPromocion { ...props} 
+                                            getpromocion={this.getpromocion.bind(this)}
+                                            promocion={this.state.array_promocion}
+                                            onModalActive={this.onModalActive.bind(this)} { ...props}
+                                            pagination= {this.state.pagination}
+                                            paginate= {this.state.paginate}
+
+                                            get_link={this.get_link.bind(this)}
+                                            logout={this.onLogout.bind(this)}
+
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                            permisos_habilitados={this.state.permisos_habilitados}
+
+                                        />} 
+                                    />
+                                    <Route exact path={ web.serv_link + '/promocion/create'} 
+                                        render={props => 
+                                        <CreatePromocion get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+                                    <Route exact path={ web.serv_link + '/promocion/editar/:id'} 
+                                        render={props => 
+                                        <EditarPromocion get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
 
                                 </div>
                             </div>
+
+                            <Footer footercolor={this.state.layoutoption.footercolor}
+                                visitasitio={this.state.visitasitio} 
+                            />
                             
                         </div>
                     </div>
@@ -1677,7 +2006,10 @@ export default class Index extends Component {
                         style={{display: (this.state.visible)?'block':'none'}}
                     ></div>
 
-                    {/* <div className='ui-theme-settings settings-open'>
+                    {/* <div className='ui-theme-settings'>
+                        <button type="button" id="TooltipDemo" className="btn-open-options btn btn-primary">
+                            <i className="fa fa-cog fa-w-16 fa-spin fa-2x"></i>
+                        </button>
                         <div className='theme-settings__inner'></div>
                     </div> */}
 

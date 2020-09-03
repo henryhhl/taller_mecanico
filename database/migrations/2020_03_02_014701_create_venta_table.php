@@ -35,6 +35,7 @@ class CreateVentaTable extends Migration
             $table->enum('estado', ['A', 'N'])->default('A');
             $table->date('fecha');
             $table->time('hora');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('idusuario')->references('id')->on('users')->ondelete('cascade');
             $table->foreign('idcliente')->references('id')->on('cliente')->ondelete('cascade');

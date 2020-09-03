@@ -18,6 +18,7 @@ class CreatePermisoTable extends Migration
             $table->integer('idpermiso')->unsigned()->nullable();
             $table->string('nombre');
             $table->enum('estado', ['A', 'N'])->default('A');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('idpermiso')->references('id')->on('permiso')->ondelete('cascade');
         });

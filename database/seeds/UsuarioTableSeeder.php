@@ -21,23 +21,29 @@ class UsuarioTableSeeder extends Seeder
     private function _get_data() {
         return [
             [
-                'nombre'      => 'administrador',
+                'nombre'      => 'admin',
                 'apellido'    => 'administra',
                 'usuario'     => 'admin',
                 'password'    => bcrypt('123123'),
             ], //1
             [
-                'nombre'      => 'henry',
-                'apellido'    => 'huarachi laime',
+                'nombre'      => 'Henry',
+                'apellido'    => 'Huarachi Laime',
                 'usuario'     => 'henry',
                 'password'    => bcrypt('123123'),
             ], //2
             [
-                'nombre'      => 'milton',
-                'apellido'    => '',
-                'usuario'     => 'milton',
+                'nombre'      => 'Juan Carlos',
+                'apellido'    => 'Mamani Huayta',
+                'usuario'     => 'juan',
                 'password'    => bcrypt('123123'),
-            ], //3
+            ], //2
+            [
+                'nombre'      => 'Jose Rebeka',
+                'apellido'    => 'Guerrero Lazarte',
+                'usuario'     => 'rebeka',
+                'password'    => bcrypt('123123'),
+            ], //2
         ];
     }
 

@@ -15,15 +15,19 @@ class CreateVehiculoTable extends Migration
     {
         Schema::create('vehiculo', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('idcliente')->unsigned();
-            $table->integer('idvehiculotipo')->unsigned();
-            $table->integer('idmarca')->unsigned();
-            $table->integer('idmodelo')->unsigned();
-            $table->integer('idvehiculocolor')->unsigned();
-            $table->integer('idvehiculoyear')->unsigned();
+            $table->integer('idcliente')->unsigned()->nullable();
+            $table->integer('idvehiculotipo')->unsigned()->nullable();
+            $table->integer('idmarca')->unsigned()->nullable();
+            $table->integer('idmodelo')->unsigned()->nullable();
+            $table->integer('idvehiculocolor')->unsigned()->nullable();
+            $table->integer('idvehiculoyear')->unsigned()->nullable();
             $table->string('placa');
             $table->string('nroserie')->nullable();
             $table->string('observacion')->nullable();
+            $table->string('color')->nullable();
+            $table->string('year')->nullable();
+            $table->string('modelo')->nullable();
+            $table->string('marca')->nullable();
             $table->enum('estado', ['A', 'N'])->default('A');
             $table->date('fecha');
             $table->time('hora');
