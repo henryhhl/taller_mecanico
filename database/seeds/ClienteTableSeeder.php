@@ -23,7 +23,6 @@ class ClienteTableSeeder extends Seeder
         $mytime = Carbon::now('America/La_paz');
         return [
             [
-                'ci' => '3235589',
                 'nombre' => 'MERCEDES INGRID',
                 'apellido' => 'PARADA JUSTINIANO',
                 'nit' => '4046285',
@@ -38,7 +37,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //1
             [
-                'ci' => '7780912',
                 'nombre' => 'BRIGUITTE GABRIELA',
                 'apellido' => 'GUZMAN JIMENEZ',
                 'razonsocial' => '215175530',
@@ -53,7 +51,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //2
             [
-                'ci' => '7836435',
                 'nombre' => 'ROLANDO',
                 'apellido' => 'PARADA LOZA',
                 'telefono' => '86451278',
@@ -67,7 +64,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //3
             [
-                'ci' => '6522165',
                 'nombre' => 'SANTIAGO',
                 'apellido' => 'MENDEZ LOPEZ',
                 'nit' => '213200961',
@@ -82,7 +78,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //4
             [
-                'ci' => '4598339',
                 'nombre' => 'FERNANDO',
                 'apellido' => 'SEGOVIA CLAROS',
                 'nit' => '212020587',
@@ -97,7 +92,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //5
             [
-                'ci' => '9784039',
                 'nombre' => 'NEYDER ARIEL ',
                 'apellido' => 'NUÑEZ FLORES',
                 'nit' => '216049792',
@@ -112,7 +106,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //6
             [
-                'ci' => '7842096',
                 'nombre' => 'ALBERTO JOSE',
                 'apellido' => 'TAPIA QUIROZ',
                 'nit' => '216088501',
@@ -127,7 +120,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //7
             [
-                'ci' => '6323276',
                 'nombre' => 'MODESTO',
                 'apellido' => 'PEREZ QUISPE',
                 'nit' => '209048697',
@@ -142,7 +134,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //8
             [
-                'ci' => '10311829',
                 'nombre' => 'BENITA',
                 'apellido' => 'PADILLA CABA ',
                 'nit' => '211070998',
@@ -157,7 +148,6 @@ class ClienteTableSeeder extends Seeder
                 'hora'        => $mytime->toTimeString(),
             ], //9
             [
-                'ci' => '7694190',
                 'nombre' => 'JANETH',
                 'apellido' => 'CALDERON NUÑEZ',
                 'nit' => '210005505',
