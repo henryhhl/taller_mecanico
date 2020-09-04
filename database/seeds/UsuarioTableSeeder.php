@@ -37,13 +37,13 @@ class UsuarioTableSeeder extends Seeder
                 'apellido'    => 'Mamani Huayta',
                 'usuario'     => 'juan',
                 'password'    => bcrypt('123123'),
-            ], //2
+            ], //3
             [
                 'nombre'      => 'Jose Rebeka',
                 'apellido'    => 'Guerrero Lazarte',
                 'usuario'     => 'rebeka',
                 'password'    => bcrypt('123123'),
-            ], //2
+            ], //4
         ];
     }
 

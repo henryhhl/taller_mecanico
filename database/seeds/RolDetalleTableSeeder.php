@@ -25,6 +25,21 @@ class RolDetalleTableSeeder extends Seeder
                 'idrol'       => 1,
                 'estado'      => 'A',
             ], //1
+            [
+                'idusuario'   => 2,
+                'idrol'       => 1,
+                'estado'      => 'A',
+            ], //2
+            [
+                'idusuario'   => 3,
+                'idrol'       => 2,
+                'estado'      => 'A',
+            ], //3
+            [
+                'idusuario'   => 4,
+                'idrol'       => 2,
+                'estado'      => 'A',
+            ], //4
         ];
     }
 
