@@ -3,11 +3,244 @@ import React, { Component } from 'react';
 import {Redirect} from 'react-router-dom';
 import axios from 'axios';
 import { Page, Text, StyleSheet, View, Document, Image, PDFDownloadLink } from '@react-pdf/renderer';
+import ReactToPrint, { PrintContextConsumer } from "react-to-print";
 import { notification, Card, Modal, DatePicker, message, Select, Checkbox } from 'antd';
 import 'antd/dist/antd.css';
 import web from './utils/services';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+
+
+class ComponentToPrintDet extends React.Component {
+    render() {
+        var head = {padding: 10,  font: '500 12px Roboto',};
+        var body = { paddingLeft: 10, 
+            paddingTop: 8, paddingRight: 3, paddingBottom: 5, font: '300 13px Roboto'
+        };
+        var mtototaldet = 0;
+        var monto = 0;
+        var idventa = 0;
+        var montodescuento = 0;
+        return (
+            <table style={{width: '100%', paddingTop: 40, paddingBottom: 40,  }} className='tables-respons'>
+                <tbody>
+                    <tr>
+                        <th colSpan='7' style={{fontSize: 15, textAlign: 'center', fontWeight: 'bold', paddingBottom: 10,}}>
+                            REPORTE DETALLADO DE SERVICIO DE MANTENIMIENTO
+                        </th>
+                    </tr>
+                </tbody>
+                    
+                {this.props.array_resultprint.map(
+                    (value, key) => {
+                        monto = value.montototal;
+                        montodescuento = value.mtodescuento;
+                        if (idventa != value.id) {
+
+                            mtototaldet += value.montototal * 1;
+                            idventa = value.id;
+
+                            var obj = {};
+                            if (value.id * 1 > 1) {
+                                obj = {marginTop: 20,}
+                            }
+                            return (
+                                <tbody key={key}>
+                                    { (value.id * 1 > 1) ? 
+                                        <tr style={ {borderWidth: 1, borderColor: '#e8e8e8', backgroundColor: '#f5f5f5'} }>
+                                            <th colSpan='7' style={{width: '100%', padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8,textAlign: 'right', paddingRight: 5, }}>
+                                                { 'DESC GRAL:  ' + parseFloat(this.props.array_resultprint[key - 1].mtodescuento).toFixed(2) + ' - TOTAL: ' + parseFloat(this.props.array_resultprint[key - 1].montototal).toFixed(2)} 
+                                            </th>
+                                        </tr> : null 
+                                    }
+                                    <tr style={obj}>
+                                        <th style={{ padding: 3, color: 'black', fontWeight: 'bold', fontSize: 7, }}>
+                                            {'VENDEDOR: '}
+                                        </th>
+                                        <th style={{ padding: 3, borderRightWidth: 1, borderColor: '#e8e8e8', color: 'black', fontWeight: 'bold', fontSize: 7 }}>
+                                            
+                                            {       (value.usuario == null) ? '-' :
+                                                (value.userapellido == null) ? value.usuario : value.usuario + ' ' + value.userapellido
+                                            }
+                                        </th>
+                                        <th colSpan='2' style={{width: '10%', padding: 3, color: 'black', fontWeight: 'bold', fontSize: 7, }}>
+                                            {'CLIENTE: '}
+                                        </th>
+                                        <th style={{padding: 3, borderRightWidth: 1, borderColor: '#e8e8e8',color: 'black', fontWeight: 'bold', fontSize: 7, }}>
+                                            
+                                            {       (value.cliente == null) ? '-' :
+                                                (value.cliapellido == null) ? value.cliente : value.cliente + ' ' + value.cliapellido
+                                            }
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 7, }}>
+                                            {'VEHICULO: '}
+                                        </th>
+                                        <th style={{ padding: 3, color: 'black', fontWeight: 'bold', fontSize: 7, }}>
+                                            {(value.placa == null) ? '-' : value.placa}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                ID
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                SERV/PROD
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                MECANICO
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                CANTIDAD
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                PRECIO.
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                DESC
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontWeight: 'bold', fontSize: 8, }}>
+                                                SUBTOTAL
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th style={{padding: 3, color: 'black', fontSize: 8 }}>
+                                                {value.idproducto}
+                                        </th>
+                                        <th style={{padding: 3,color: 'black', fontSize: 8 }}>
+                                                {value.descripcion}
+                                        </th>
+                                        <th style={{padding: 3, color: 'black', fontSize: 8 }}>
+                                                {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
+                                                    value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                                }
+                                        </th>
+                                        <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8 }}>
+                                                {parseInt(value.cantidad)}
+                                        </th>
+                                        <th style={{padding: 3, textAlign: 'right', paddingRight: 5,color: 'black', fontSize: 8 }}>
+                                                {value.precio}
+                                        </th>
+                                        <th style={{ padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8 }}>
+                                                {parseInt(value.descuento)}
+                                        </th>
+                                        <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8 }}>
+                                                {parseFloat( (value.precio * value.cantidad) - (value.precio * value.cantidad * (value.descuento * 1 / 100)) ).toFixed(2)}
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            );
+                        }
+                        return (
+                            <tbody key={key}>
+                                <tr>
+                                    <th style={{padding: 3, color: 'black', fontSize: 8, }}>
+                                            {value.idproducto}
+                                    </th>
+                                    <th style={{ padding: 3, color: 'black', fontSize: 8, }}>
+                                            {value.descripcion}
+                                    </th>
+                                    <th style={{padding: 3, color: 'black', fontSize: 8, }}>
+                                            {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
+                                                value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                            }
+                                    </th>
+                                    <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8, }}>
+                                            {parseInt(value.cantidad)}
+                                    </th>
+                                    <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8, }}>
+                                            {value.precio}
+                                    </th>
+                                    <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8, }}>
+                                            {parseInt(value.descuento)}
+                                    </th>
+                                    <th style={{ padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8, }}>
+                                            {parseFloat( (value.precio * value.cantidad) - (value.precio * value.cantidad * (value.descuento * 1 / 100)) ).toFixed(2)}
+                                        
+                                    </th>
+                                </tr>
+                            </tbody>
+                        );
+                    }
+                )}
+                <tbody>
+                    <tr>
+                        <th colSpan='7' style={{ padding: 3, color: 'black', fontSize: 8,textAlign: 'right', paddingRight: 5, }}>
+                                {  'DESC GRAL:' + parseFloat(montodescuento).toFixed(2) + ' - TOTAL: ' + parseFloat( monto ).toFixed(2)} 
+                        </th>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                    <th colSpan='7' style={{width: '100%', padding: 3, color: 'black', fontSize: 8,textAlign: 'right', paddingRight: 5, }}>
+                            { 'TOTAL GENERAL: ' + parseFloat(mtototaldet).toFixed(2)} 
+                    </th>
+                    </tr>
+                </tbody>
+            </table>
+        );
+    }
+}
+
+class ComponentToPrint extends React.Component {
+    render() {
+        var head = {padding: 10,  font: '500 12px Roboto',};
+        var body = { paddingLeft: 10, 
+            paddingTop: 8, paddingRight: 3, paddingBottom: 5, font: '300 13px Roboto'
+        };
+        return (
+            <table style={{width: '100%', paddingTop: 40, paddingBottom: 40,  }}>
+                <tbody>
+                    <tr>
+                        <th colSpan='6' style={{fontSize: 15, textAlign: 'center', fontWeight: 'bold', paddingBottom: 10,}}>
+                            REPORTE DE SERVICIO DE MANTENIMIENTO
+                        </th>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <th style={head}> ID </th>
+                        <th style={head}> VENDEDOR </th>
+                        <th style={head}> CLIENTE </th>
+                        <th style={head}> PLACA VEH. </th>
+                        <th style={head}> DESC </th>
+                        <th style={head}> MONTO </th>
+                    </tr>
+                </tbody>
+                <tbody>
+                    
+                    {this.props.array_resultprint.map(
+                        (data, key) => (
+                            <tr key={key}>
+                                <td style={body}>
+                                    {data.id}
+                                </td>
+                                <td style={body}>
+                                    {data.usuario == null ? '- ' : 
+                                        data.userapellido == null ? data.usuario : data.usuario + ' ' + data.userapellido
+                                    }
+                                </td>
+                                <td style={body}>
+                                    {data.cliente == null ? '- ' : 
+                                        data.cliapellido == null ? data.cliente : data.cliente + ' ' + data.cliapellido
+                                    }
+                                </td>
+                                <td style={body}>
+                                    {data.placa == null ? '-' : data.placa}
+                                </td>
+                                <td style={body}>
+                                    {parseInt(data.descuento)}
+                                </td>
+                                <td style={body}>
+                                    {data.montototal}
+                                </td>
+                            </tr>
+                        )
+                    )}
+                </tbody>
+            </table>
+        );
+    }
+}
 
 export default class Reporte extends Component {
     constructor(props) {
@@ -157,6 +390,7 @@ export default class Reporte extends Component {
             }
         ).then(
             response => {
+                console.log(response.data)
                 if (response.data.response == 1) {
                     console.log(response.data)
                     notification.success({
@@ -164,17 +398,33 @@ export default class Reporte extends Component {
                         description: 'REPORTE ANALIZADO EXITOSAMENTE.',
                     });
                     if (this.state.venta) {
-                        this.setState({ visible_loading: false, array_resultado: response.data.data, }, () => {
-                            setTimeout(() => {
-                                document.getElementById('pdf_render').click();
-                            }, 1000);
-                        });
+                        if (this.state.pdf) {
+                            this.setState({ visible_loading: false, array_resultado: response.data.data, }, () => {
+                                setTimeout(() => {
+                                    document.getElementById('pdf_render').click();
+                                }, 1000);
+                            });
+                        }else {
+                            this.setState({ visible_loading: false, array_resultado: response.data.data, }, () => {
+                                setTimeout(() => {
+                                    document.getElementById('generate_print').click();
+                                }, 1000);
+                            });
+                        }
                     }else {
-                        this.setState({ visible_loading: false, array_resultadodet: response.data.data, }, () => {
-                            setTimeout(() => {
-                                document.getElementById('pdfdet_render').click();
-                            }, 1000);
-                        });
+                        if (this.state.pdf) {
+                            this.setState({ visible_loading: false, array_resultado: response.data.data, }, () => {
+                                setTimeout(() => {
+                                    document.getElementById('pdfdet_render').click();
+                                }, 1000);
+                            });
+                        }else {
+                            this.setState({ visible_loading: false, array_resultado: response.data.data, }, () => {
+                                setTimeout(() => {
+                                    document.getElementById('generate_printdet').click();
+                                }, 1000);
+                            });
+                        }
                     }
                     return;
                 }
@@ -274,14 +524,16 @@ export default class Reporte extends Component {
                                 </View>
                                 <View style={{width: '30%', padding: 3, }}>
                                     <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
-                                        {       (value.cliente == null) ? '-' :
+                                        {       (value.usuario == null) ? '-' :
                                             (value.userapellido == null) ? value.usuario : value.usuario + ' ' + value.userapellido
                                         }
                                     </Text>
                                 </View>
                                 <View style={{width: '30%', padding: 3, }}>
                                     <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
-                                        {(value.cliapellido == null) ? value.cliente : value.cliente + ' ' + value.cliapellido}
+                                        {       (value.cliente == null) ? '-' :
+                                            (value.cliapellido == null) ? value.cliente : value.cliente + ' ' + value.cliapellido
+                                        }
                                     </Text>
                                 </View>
                                 <View style={{width: '15%', padding: 3, }}>
@@ -305,7 +557,229 @@ export default class Reporte extends Component {
                     <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8', backgroundColor: '#f5f5f5'}] }>
                         <View style={{width: '100%', padding: 3, }}>
                             <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,textAlign: 'right', paddingRight: 5,} ]}>
-                                {parseFloat(montototal).fixed(2)}
+                                {parseFloat(montototal).toFixed(2)}
+                            </Text>
+                        </View>
+                    </View>
+                    <Text style={{left: 0, right: 25, color: 'grey', bottom: 15, 
+                            position: 'absolute', textAlign: 'right', fontSize: 10, 
+                        }}
+                        render={ ({ pageNumber, totalPages }) => (
+                            `${pageNumber} / ${totalPages}`
+                        )} fixed
+                    />
+                </Page>
+            </Document>
+        );
+
+        var mtototaldet = 0;
+        var monto = 0;
+        var idventa = 0;
+        var montodescuento = 0;
+
+        const MyDocDet = (
+            <Document title={'REPORTE DE SERVICIO DETALLADO DE MANTENIMIENTO'}>
+                <Page size="A4" style={styles.body}>
+                    <View style={{width: '100%', textAlign: 'center', paddingBottom: 15,}}>
+                        <Text style={[styles.title, {fontSize: 12,}]}>
+                            {'REPORTE DE SERVICIO DE MANTENIMIENTO'}
+                        </Text>
+                    </View>
+                    {this.state.array_resultado.map( (value, key) => {
+                        monto = value.montototal;
+                        montodescuento = value.mtodescuento;
+                        if (idventa != value.id) {
+
+                            mtototaldet += value.montototal * 1;
+                            idventa = value.id;
+
+                            var obj = {};
+                            if (value.id * 1 > 1) {
+                                obj = {marginTop: 20,}
+                            }
+                            return (
+                                <View key={key} style={{width: '100%',}}>
+
+                                    { (value.id * 1 > 1) ? 
+                                        <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8', backgroundColor: '#f5f5f5'}] }>
+                                            <View style={{width: '100%', padding: 3, }}>
+                                                <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,textAlign: 'right', paddingRight: 5,} ]}>
+                                                    { 'DESC GRAL:  ' + parseFloat(this.state.array_resultado[key - 1].mtodescuento).toFixed(2) + ' - TOTAL: ' + parseFloat(this.state.array_resultado[key - 1].montototal).toFixed(2)} 
+                                                </Text>
+                                            </View>
+                                        </View> : null 
+                                    }
+
+                                    <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8',}, obj] }>
+                                        <View style={{width: '10%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
+                                                {'VENDEDOR: '}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '23%', padding: 3, borderRightWidth: 1, borderColor: '#e8e8e8' }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
+                                                {       (value.usuario == null) ? '-' :
+                                                    (value.userapellido == null) ? value.usuario : value.usuario + ' ' + value.userapellido
+                                                }
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
+                                                {'CLIENTE: '}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '23%', padding: 3, borderRightWidth: 1, borderColor: '#e8e8e8' }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
+                                                {       (value.cliente == null) ? '-' :
+                                                    (value.cliapellido == null) ? value.cliente : value.cliente + ' ' + value.cliapellido
+                                                }
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
+                                                {'VEHICULO: '}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '23%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 7,} ]}>
+                                                {(value.placa == null) ? '-' : value.placa}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={ [styles.head, {borderRightWidth: 1, borderColor: '#e8e8e8'}] }>
+                                        <View style={{width: '5%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                ID
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '30%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                SERV/PROD
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '30%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                MECANICO
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                CANTIDAD
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                PRECIO.
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '5%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                DESC
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                SUBTOTAL
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8', backgroundColor: '#f5f5f5'}] }>
+                                        <View style={{width: '5%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {value.idproducto}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '30%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {value.descripcion}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '30%', padding: 3, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
+                                                    value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                                }
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {parseInt(value.cantidad)}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {value.precio}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '5%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {parseInt(value.descuento)}
+                                            </Text>
+                                        </View>
+                                        <View style={{width: '10%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                                {parseFloat( (value.precio * value.cantidad) - (value.precio * value.cantidad * (value.descuento * 1 / 100)) ).toFixed(2)}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            );
+                        }
+                        return (
+                            <View key={key} style={{width: '100%',}}>
+                                <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8',}] }>
+                                    <View style={{width: '5%', padding: 3, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {value.idproducto}
+                                        </Text>
+                                    </View>
+                                    <View style={{width: '30%', padding: 3, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {value.descripcion}
+                                        </Text>
+                                    </View>
+                                    <View style={{width: '30%', padding: 3, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
+                                                value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                            }
+                                        </Text>
+                                    </View>
+                                    <View style={{width: '10%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {parseInt(value.cantidad)}
+                                        </Text>
+                                    </View>
+                                    <View style={{width: '10%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {value.precio}
+                                        </Text>
+                                    </View>
+                                    <View style={{width: '5%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {parseInt(value.descuento)}
+                                        </Text>
+                                    </View>
+                                    <View style={{width: '10%', padding: 3, textAlign: 'right', paddingRight: 5, }}>
+                                        <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
+                                            {parseFloat( (value.precio * value.cantidad) - (value.precio * value.cantidad * (value.descuento * 1 / 100)) ).toFixed(2)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        );
+                    } )}
+                    <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8', backgroundColor: '#f5f5f5'}] }>
+                        <View style={{width: '100%', padding: 3, }}>
+                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,textAlign: 'right', paddingRight: 5,} ]}>
+                                {  'DESC GRAL:' + parseFloat(montodescuento).toFixed(2) + ' - TOTAL: ' + parseFloat( monto ).toFixed(2)} 
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={ [styles.head, {borderWidth: 1, borderColor: '#e8e8e8', backgroundColor: '#f5f5f5'}] }>
+                        <View style={{width: '100%', padding: 3, }}>
+                            <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,textAlign: 'right', paddingRight: 5,} ]}>
+                                { 'TOTAL GENERAL: ' + parseFloat(mtototaldet).toFixed(2)} 
                             </Text>
                         </View>
                     </View>
@@ -330,12 +804,38 @@ export default class Reporte extends Component {
                         ( loading ? 'LOADING DOCUMENT...' : <a href={url} id='pdf_render' style={{display: 'none'}} target='_blank'>insertar</a> ) 
                     }
                 </PDFDownloadLink>
-                {/* <PDFDownloadLink document={ MyDocDet } fileName='mantenimientodet.pdf' >
+                <PDFDownloadLink document={ MyDocDet } fileName='mantenimientodet.pdf' >
                     { ( {blob, url, loading, error} ) => 
                         // ( loading ? 'LOADING DOCUMENT...' : <button style={{display: 'none'}} id='pdf_render'>insertar</button> ) 
                         ( loading ? 'LOADING DOCUMENT...' : <a href={url} id='pdfdet_render' style={{display: 'none'}} target='_blank'>insertar</a> ) 
                     }
-                </PDFDownloadLink> */}
+                </PDFDownloadLink>
+                <ReactToPrint bodyClass={'mt_30'} pageStyle={'pt_20'} 
+                    onBeforePrint={() => this.setState({visible_reporte: false, })} 
+                    content={() => this.componentRef}
+                >
+                    <PrintContextConsumer >
+                        {({ handlePrint }) => (
+                            <a style={{display: 'none',}} onClick={handlePrint} id="generate_print">Generar</a>
+                        )}
+                    </PrintContextConsumer>
+                </ReactToPrint>
+                <div style={{display: 'none'}}>
+                    <ComponentToPrint array_resultprint={this.state.array_resultado} ref={el => (this.componentRef = el)} />
+                </div>
+                <ReactToPrint bodyClass={'mt_30'} pageStyle={'pt_20'} 
+                    onBeforePrint={() => this.setState({visible_reporte: false, })} 
+                    content={() => this.componentRef}
+                >
+                    <PrintContextConsumer >
+                        {({ handlePrint }) => (
+                            <a style={{display: 'none',}} onClick={handlePrint} id="generate_printdet">Generar</a>
+                        )}
+                    </PrintContextConsumer>
+                </ReactToPrint>
+                <div style={{display: 'none'}}>
+                    <ComponentToPrintDet array_resultprint={this.state.array_resultado} ref={el => (this.componentRef = el)} />
+                </div>
                 <Modal
                     title="Cargando Informacion"
                     centered closable={ false }

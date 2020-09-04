@@ -6,7 +6,7 @@ import web from '../utils/services';
 
 import {withRouter, Link} from 'react-router-dom';
 
-import { notification, Dropdown, Menu } from 'antd';
+import { notification, Dropdown, Menu, message } from 'antd';
 import 'antd/dist/antd.css';
 
 export default class Header extends Component {
@@ -15,6 +15,10 @@ export default class Header extends Component {
         super(props);
         this.state = {
             visible_perfil: false,
+            visible_search: false,
+            active_search: 'active',
+            search: '',
+            timeoutSearch: undefined,
         };
     }
 
@@ -23,9 +27,52 @@ export default class Header extends Component {
         this.props.history.push( web.serv_link + '/ajuste');
     }
 
+    get_search(value) {
+        var formdata = new FormData();
+        formdata.append('search', value);
+        axios.post( web.servidor + '/ajuste/search_general', formdata).then(
+            (response) => {
+                console.log(response.data)
+                if (response.status == 200) {
+                    if (response.data.response == -3) {
+                        this.props.logout();
+                        return;
+                    }
+                    if (response.data.response == 1) {
+                        console.log(response.data)
+                        return;
+                    }
+                }
+            }
+        ).catch( error => {
+            message.error('HUBO PROBLEMA AL SOLICITUD SERVICIO');
+        } );
+    }
+
+    onchangeSearch(event) {
+        var value = event.target.value;
+        this.setState({
+            search: value,
+        });
+        if (this.state.timeoutSearch) {
+            clearTimeout(this.state.timeoutSearch);
+            this.setState({ timeoutSearch: undefined});
+        }
+        this.state.timeoutSearch = setTimeout(() => {
+            this.get_search(value)
+        }, 1000);
+        this.setState({ timeoutSearch: this.state.timeoutSearch});
+    }
+
     render() {
 
         var usuario = this.props.usuario;
+
+        const menushearch = (
+            <Menu style={{width: '200%'}}>
+                a
+            </Menu>
+        );
 
         const menu = (
             <div tabIndex="-1" role="menu" className={`rm-pointers dropdown-menu-lg dropdown-menu dropdown-menu-right show`}>
@@ -146,6 +193,24 @@ export default class Header extends Component {
                 </div>    
                 <div className="app-header__content">
                     
+                    <div className="app-header-left">
+
+                        <Dropdown overlay={menushearch} trigger={['click']} 
+                            visible={this.state.visible_search}
+                            onVisibleChange={ () => this.setState({visible_search: !this.state.visible_search}) }
+                        >
+                            <div className={`search-wrapper ${this.state.active_search}`}>
+                                <div className="input-holder">
+                                    <input type="text" className="search-input" placeholder="INGRESAR DATO..." 
+                                        value={this.state.search} onChange={this.onchangeSearch.bind(this)}
+                                    />
+                                    <button className="search-icon" onClick={ () => this.setState({active_search: 'active'}) }><span></span></button>
+                                </div>
+                                <button className="close" onClick={ () => this.setState({search: '', active_search: ''}) }></button>
+                            </div>
+                        </Dropdown>
+                    </div>
+
                     <div className="app-header-right">
                         <div className="header-dots">
                             

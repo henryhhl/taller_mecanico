@@ -262,3 +262,5 @@ Route::get( $local . '/reporte_general', 'HomeController@index');
 
 Route::post( $servidor . '/venta/reporte', 'VentaController@reporte');
 
+Route::post( $servidor . '/ajuste/search_general', 'AjusteController@search_general');
+
