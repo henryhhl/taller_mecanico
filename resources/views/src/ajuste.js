@@ -17,6 +17,7 @@ export default class Ajuste extends Component {
         super (props);
         this.state = {
             visible_loading: false,
+            selectedTema: [],
             selectedSidebar: [],
             selectedHeader: [],
             selectedFooter: [],
@@ -31,7 +32,7 @@ export default class Ajuste extends Component {
     };
 
     componentDidMount() {
-        this.props.get_link('', true);
+        this.props.get_link('ajuste', true);
         this.get_data();
     }
 
@@ -92,6 +93,47 @@ export default class Ajuste extends Component {
         );
     }
 
+    onSelectColorTema(pos, event) {
+        var button = event.target.getAttribute('data-button');
+        var header = event.target.getAttribute('data-header');
+        var sidebar =event.target.getAttribute('data-sidebar');
+        for (let index = 0; index < this.state.selectedTema.length; index++) {
+            if (index != pos) this.state.selectedTema[index] = '';
+        }
+        this.state.selectedTema[pos] = (this.state.selectedTema[pos].length > 0) ? '' : ' active';
+        button = (this.state.selectedTema[pos].length > 0) ? button : '';
+        header = (this.state.selectedTema[pos].length > 0) ? header : '';
+        sidebar = (this.state.selectedTema[pos].length > 0) ? sidebar : '';
+
+        for (let index = 0; index < this.state.selectedHeader.length; index++) {
+            this.state.selectedHeader[index] = '';
+        }
+        for (let index = 0; index < this.state.selectedSidebar.length; index++) {
+            this.state.selectedSidebar[index] = '';
+        }
+        for (let index = 0; index < this.state.selectedFooter.length; index++) {
+            this.state.selectedFooter[index] = '';
+        }
+        for (let index = 0; index < this.state.selectedButton.length; index++) {
+            this.state.selectedButton[index] = '';
+        }
+        this.setState({
+            selectedTema: this.state.selectedTema,
+            selectedHeader: this.state.selectedHeader,
+            header: header,
+            selectedSidebar: this.state.selectedSidebar,
+            sidebar: sidebar,
+            selectedFooter: this.state.selectedFooter,
+            footer: sidebar,
+            selectedButton: this.state.selectedButton,
+            button: button,
+        });
+        this.props.onSelectColorHeader(header);
+        this.props.onSelectColorSidebar(sidebar);
+        this.props.onSelectColorFooter(sidebar);
+        this.props.onSelectColorButton(button);
+    }
+
     onSelectColorHeader(pos, event) {
         var header =event.target.getAttribute('data-header');
         for (let index = 0; index < this.state.selectedHeader.length; index++) {
@@ -148,6 +190,35 @@ export default class Ajuste extends Component {
         this.props.onSelectColorButton(button);
     }
 
+    resetColorTema() {
+        for (let index = 0; index < this.state.selectedHeader.length; index++) {
+            this.state.selectedHeader[index] = '';
+        }
+        for (let index = 0; index < this.state.selectedSidebar.length; index++) {
+            this.state.selectedSidebar[index] = '';
+        }
+        for (let index = 0; index < this.state.selectedFooter.length; index++) {
+            this.state.selectedFooter[index] = '';
+        }
+        for (let index = 0; index < this.state.selectedButton.length; index++) {
+            this.state.selectedButton[index] = '';
+        }
+        this.setState({
+            selectedHeader: this.state.selectedHeader,
+            header: '',
+            selectedSidebar: this.state.selectedSidebar,
+            sidebar: '',
+            selectedFooter: this.state.selectedFooter,
+            footer: '',
+            selectedButton: this.state.selectedButton,
+            button: '',
+        });
+        this.props.onSelectColorHeader('');
+        this.props.onSelectColorSidebar('');
+        this.props.onSelectColorFooter('');
+        this.props.onSelectColorButton('');
+    }
+
     resetColorHeader() {
         for (let index = 0; index < this.state.selectedHeader.length; index++) {
             this.state.selectedHeader[index] = '';
@@ -202,6 +273,13 @@ export default class Ajuste extends Component {
             sizetext: '',
         });
         this.props.onSelectSizeLetra('');
+    }
+
+    onActiveTema(pos) {
+        if (typeof this.state.selectedTema[pos] == 'undefined') {
+            this.state.selectedTema[pos] = '';
+        }
+        return this.state.selectedTema[pos];
     }
 
     onActiveHeader(pos) {
@@ -334,8 +412,68 @@ export default class Ajuste extends Component {
                             <div className="col-lg-12">
                                 <div id="accordion" className="accordion-wrapper mb-3">
                                     <div className="card">
+                                        <div id="headingThree" className="card-header">
+                                            <button type="button" data-toggle="collapse" data-target="#collapseOne6" aria-expanded="true" 
+                                                aria-controls="collapseThree" className="text-left m-0 p-0 btn btn-link btn-block collapsed"
+                                            >
+                                                <h5 className={"m-0 p-0" + ' ' + this.props.sizetext}>
+                                                    TEMAS
+                                                </h5>
+                                            </button>
+                                        </div>
+                                        <div data-parent="#accordion" id="collapseOne6" className="collapse show">
+                                            <div className="card-body">
+                                                <div className="p-3">
+                                                    <ul className="list-group">
+                                                        <li className="list-group-item">
+                                                            <h5 className="pb-2">
+                                                                SELECCIONAR COLOR
+                                                                <button type="button" className="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm pull-right" 
+                                                                    data-tema="" onClick={ this.resetColorTema.bind(this) }>
+                                                                    RESTAURAR
+                                                                </button>
+                                                            </h5>
+                                                            <div className="theme-settings-swatches">
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 0) } className={"swatch-holder bg-primary" + this.onActiveTema(0) } 
+                                                                    data-button="primary" data-header="bg-primary header-text-light" data-sidebar="bg-primary sidebar-text-light"  >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 1) } className={"swatch-holder bg-secondary" + this.onActiveTema(1) } 
+                                                                    data-button="secondary" data-header="bg-secondary header-text-light" data-sidebar="bg-secondary sidebar-text-light"  >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 2) } className={"swatch-holder bg-success" + this.onActiveTema(2) } 
+                                                                    data-button="success" data-header="bg-success header-text-light" data-sidebar="bg-success sidebar-text-dark"  >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 3) } className={"swatch-holder bg-info" + this.onActiveTema(3) } 
+                                                                    data-button="info" data-header="bg-info header-text-light" data-sidebar="bg-info sidebar-text-dark"   >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 4) } className={"swatch-holder bg-warning" + this.onActiveTema(4) } 
+                                                                    data-button="warning" data-header="bg-warning header-text-dark" data-sidebar="bg-warning sidebar-text-dark"   >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 5) } className={"swatch-holder bg-danger" + this.onActiveTema(5) } 
+                                                                    data-button="danger" data-header="bg-danger header-text-light" data-sidebar="bg-danger sidebar-text-light"  >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 6) } className={"swatch-holder bg-light" + this.onActiveTema(6) } 
+                                                                    data-button="light" data-header="bg-light header-text-dark" data-sidebar="bg-light sidebar-text-dark"    >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 7) } className={"swatch-holder bg-dark" + this.onActiveTema(7) } 
+                                                                    data-button="dark" data-header="bg-dark header-text-light" data-sidebar="bg-dark sidebar-text-light"    >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 8) } className={"swatch-holder bg-focus" + this.onActiveTema(8) } 
+                                                                    data-button="focus" data-header="bg-focus header-text-light" data-sidebar="bg-focus sidebar-text-light"   >
+                                                                </div>
+                                                                <div onClick={ this.onSelectColorTema.bind(this, 9) } className={"swatch-holder bg-alternate" + this.onActiveTema(9) } 
+                                                                    data-button="alternate" data-header="bg-alternate header-text-light" data-sidebar="bg-alternate sidebar-text-light"   >
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="card">
                                         <div id="headingOne" className="card-header">
-                                            <button type="button" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="true" 
+                                            <button type="button" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="false" 
                                                 aria-controls="collapseOne" className="text-left m-0 p-0 btn btn-link btn-block"
                                             >
                                                 <h5 className={"m-0 p-0" + ' ' + this.props.sizetext}>
@@ -343,13 +481,13 @@ export default class Ajuste extends Component {
                                                 </h5>
                                             </button>
                                         </div>
-                                        <div data-parent="#accordion" id="collapseOne1" aria-labelledby="headingOne" className="collapse show">
+                                        <div data-parent="#accordion" id="collapseOne1" aria-labelledby="headingOne" className="collapse">
                                             <div className="card-body">
                                                 <div className="p-3">
                                                     <ul className="list-group">
                                                         <li className="list-group-item">
                                                             <h5 className="pb-2">
-                                                                Elija el esquema de color
+                                                                SELECCIONAR COLOR
                                                                 <button type="button" className="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm switch-header-cs-class pull-right" 
                                                                     data-header="" onClick={ this.resetColorHeader.bind(this) }>
                                                                     Restaurar
@@ -489,7 +627,7 @@ export default class Ajuste extends Component {
                                                     <ul className="list-group">
                                                         <li className="list-group-item">
                                                             <h5 className="pb-2">
-                                                                Elija el esquema de color
+                                                                SELECCIONAR COLOR
                                                                 <button type="button" className="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm switch-sidebar-cs-class pull-right" 
                                                                     data-sidebar="" onClick={ this.resetColorSidebar.bind(this) }>
                                                                     Restaurar
@@ -629,7 +767,7 @@ export default class Ajuste extends Component {
                                                     <ul className="list-group">
                                                         <li className="list-group-item">
                                                             <h5 className="pb-2">
-                                                                Elija el esquema de color
+                                                                SELECCIONAR COLOR
                                                                 <button type="button" className="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm pull-right" 
                                                                     data-footer="" onClick={ this.resetColorFooter.bind(this) }>
                                                                     Restaurar
@@ -769,7 +907,7 @@ export default class Ajuste extends Component {
                                                     <ul className="list-group">
                                                         <li className="list-group-item">
                                                             <h5 className="pb-2">
-                                                                Elija el esquema de color
+                                                                SELECCIONAR COLOR
                                                                 <button type="button" className="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm pull-right" 
                                                                     data-button="" onClick={ this.resetColorButton.bind(this) }>
                                                                     Restaurar
@@ -829,7 +967,7 @@ export default class Ajuste extends Component {
                                                     <ul className="list-group">
                                                         <li className="list-group-item">
                                                             <h5 className="pb-2">
-                                                                Elija el esquema de tamaño
+                                                                SELECCIONAR TAMAÑO
                                                                 <button type="button" className="btn-pill btn-shadow btn-wide ml-auto btn btn-focus btn-sm pull-right" 
                                                                     onClick={ this.resetSizeLetra.bind(this) }>
                                                                     Restaurar

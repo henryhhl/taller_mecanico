@@ -47,7 +47,7 @@
 						@if ($errors->has('usuario'))
 							<strong style="position: absolute; color: red;
 								bottom: -25px; left: 10px; font-size: 15px;">
-								{{ $errors->first('usuario') }}
+								ERROR. EL CAMPO USUARIO REQUERIDO 
 							</strong>
                         @endif
 					</div>
@@ -61,7 +61,7 @@
 						@if ($errors->has('password'))
 							<strong style="position: absolute; color: red;
 								bottom: -25px; left: 10px; font-size: 15px;">
-								{{ $errors->first('password') }}
+								ERROR. EL CAMPO CONTRASEÑA REQUERIDO
 							</strong>
                         @endif
                     </div>
@@ -70,11 +70,15 @@
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn" type="submit">
-								Ingresar
+								INICIAR SESIÓN
 							</button>
 						</div>
-						<a href="{{ route('register') }}">Register</a>
 					</div>
+					<!-- <div class="form-group mb-0 mt-2">
+						<div class="col-sm-12 text-center">
+							No tienes cuenta? <a href="{{ route('register') }}" class="text-info ml-1"><b>Registrar</b></a>
+						</div>
+					</div> -->
 				</form>
 			</div>
 		</div>

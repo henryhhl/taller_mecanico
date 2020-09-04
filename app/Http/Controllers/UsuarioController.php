@@ -64,6 +64,16 @@ class UsuarioController extends Controller
     public function get_information() {
 
         try {
+
+            $sesion = Auth::guest();
+
+            if ($sesion) {
+                return response()->json([
+                    'response' => -3,
+                    'sesion'   => $sesion,
+                ]);
+            }
+            
             $session = app('session');
             $token = null;
 
@@ -218,18 +228,18 @@ class UsuarioController extends Controller
             return ' LISTADO DE USUARIO: ' . $cantidad;
         }
         if ($bandera == 2) {
-            $cantidad = sizeof( DB::table('usuariocreate')->whereNotNull('usuario')->get() );
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('usuariocreate')->get() );
             return ' NUEVO USUARIO: ' . $cantidad;
         }
         if ($bandera == 3) {
-            $cantidad = sizeof( DB::table('usuarioedit')->whereNotNull('usuario')->get() );
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('usuarioedit')->get() );
             return ' EDITAR USUARIO: ' . $cantidad;
         }
         if ($bandera == 3) {
-            $cantidad = sizeof( DB::table('usuarioshow')->whereNotNull('usuario')->get() );
+            $cantidad = sizeof( DB::table('visitas')->whereNotNull('usuarioshow')->get() );
             return ' DETALLE USUARIO: ' . $cantidad;
         }
-        $cantidad = sizeof( DB::table('perfil')->whereNotNull('usuario')->get() );
+        $cantidad = sizeof( DB::table('visitas')->whereNotNull('perfil')->get() );
         return ' PERFIL: ' . $cantidad;
     }
 

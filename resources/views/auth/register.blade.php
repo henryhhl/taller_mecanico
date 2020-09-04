@@ -35,7 +35,7 @@
 
 				<form class="login100-form validate-form" method="POST" action="{{ route('register') }}">
 					<span class="login100-form-title p-b-26">
-						Registro al sistema
+						REGISTRO AL SISTEMA
                     </span>
                     
                     @csrf
@@ -45,8 +45,8 @@
                         <span class="focus-input100" data-placeholder="Nombre"></span>
                         @if ($errors->has('nombre'))
 							<strong style="position: absolute; color: red;
-								bottom: -25px; left: 10px; font-size: 15px;">
-								{{ $errors->first('nombre') }}
+								bottom: -25px; left: 10px; font-size: 10px;">
+								ERROR. EL CAMPO NOMBRE REQUERIDO 
 							</strong>
                         @endif
 					</div>
@@ -56,8 +56,8 @@
 						<span class="focus-input100" data-placeholder="Apellido"></span>
 						@if ($errors->has('apellido'))
 							<strong style="position: absolute; color: red;
-								bottom: -25px; left: 10px; font-size: 15px;">
-								{{ $errors->first('apellido') }}
+								bottom: -25px; left: 10px; font-size: 10px;">
+								ERROR. EL CAMPO APELLIDO REQUERIDO.
 							</strong>
                         @endif
 					</div>
@@ -67,8 +67,8 @@
 						<span class="focus-input100" data-placeholder="Usuario"></span>
 						@if ($errors->has('usuario'))
 							<strong style="position: absolute; color: red;
-								bottom: -25px; left: 10px; font-size: 15px;">
-								{{ $errors->first('usuario') }}
+								bottom: -25px; left: 10px; font-size: 10px;">
+								ERROR. EL CAMPO USUARIO REQUERIDO 
 							</strong>
                         @endif
 					</div>
@@ -81,8 +81,8 @@
 						<span class="focus-input100" data-placeholder="Clave"></span>
 						@if ($errors->has('password'))
 							<strong style="position: absolute; color: red;
-								bottom: -25px; left: 10px; font-size: 15px;">
-								{{ $errors->first('password') }}
+								bottom: -25px; left: 10px; font-size: 10px;">
+								ERROR. EL CAMPO CONTRASEÑA REQUERIDO 
 							</strong>
                         @endif
                     </div>
@@ -99,10 +99,10 @@
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn" type="submit">
-								Registrar
+								REGISTRAR
 							</button>
 						</div>
-						<a href="{{ route('login') }}">Login</a>
+						<a href="{{ route('login') }}">LOGIN</a>
 					</div>
 				</form>
 			</div>

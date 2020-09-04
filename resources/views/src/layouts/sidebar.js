@@ -16,7 +16,7 @@ export default class Sidebar extends Component {
 
     render() {
         return (
-            <div className={"app-sidebar sidebar-shadow " + this.props.sidebarcolor}>
+            <div className={"app-sidebar sidebar-shadow " + this.props.sidebarcolor} style={{width: '200px !important',}}>
                 <div className="app-header__logo">
                     <div className="logo-src"></div>
                     <div className="header__pane ml-auto">
@@ -78,6 +78,23 @@ export default class Sidebar extends Component {
                                     </li>
                                 {/* </ul>
                             </li> */}
+
+                            <li>
+                                <Link to={ web.serv_link + '/perfil'} onClick={this.props.init} 
+                                    className={this.props.link_active.perfil + ' ' + this.props.sizetext}
+                                >
+                                    <i className="metismenu-icon">
+                                    </i>MI PERFIL
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to={ web.serv_link + '/ajuste'} onClick={this.props.init} 
+                                    className={this.props.link_active.ajuste + ' ' + this.props.sizetext}
+                                >
+                                    <i className="metismenu-icon">
+                                    </i> AJUSTE
+                                </Link>
+                            </li>
                             
                             <li className={"app-sidebar__heading" + ' ' + this.props.sizetext}>MÓDULO</li>
                             
@@ -197,6 +214,14 @@ export default class Sidebar extends Component {
                                 </li> : null 
                             }
 
+                            <li>
+                                <Link to={ web.serv_link + '/reporte_general'} onClick={this.props.init} 
+                                    className={this.props.link_active.reporte + ' ' + this.props.sizetext}
+                                >
+                                    <i className="fa fa-clipboard"></i> REPORTE
+                                </Link>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -221,6 +246,9 @@ Sidebar.defaultProps = {
     },
     link_active: {
         home: '',
+        perfil: '',
+        ajuste: '',
+        reporte: '',
         usuario: '',
         rol: '',
         asignar_permiso: '',

@@ -257,4 +257,8 @@ Route::get( $local . '/perfil', 'HomeController@index');
 Route::get( $servidor . '/perfil', 'UsuarioController@perfil');
 Route::post( $servidor . '/update_perfil', 'UsuarioController@update_perfil');
 
+Route::get( $local . '/reporte_general', 'HomeController@index');
+
+
+Route::post( $servidor . '/venta/reporte', 'VentaController@reporte');
 

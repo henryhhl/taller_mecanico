@@ -429,4 +429,92 @@ class VentaController extends Controller
 
     }
 
+    public function reporte(Request $request) {
+        try {
+
+            $fechainicio = $request->input('fechainicio');
+            $fechafinal = $request->input('fechafinal');
+            $montoinicio = $request->input('montoinicio');
+            $opcion = $request->input('opcion');
+            $montofinal = $request->input('montofinal');
+            $venta = $request->input('venta');
+
+            $consulta = [];
+
+            if (!is_null($fechainicio)) {
+                if (is_null($fechafinal)) {
+                    array_push($consulta, [ 'vent.fecha', '>=', $fechainicio ]);
+                }else {
+                    array_push($consulta, [ 'vent.fecha', '>=', $fechainicio ]);
+                    array_push($consulta, [ 'vent.fecha', '<=', $fechafinal ]);
+                }
+            }
+
+            if ($opcion != '!') {
+                if (!is_null($montoinicio)) {
+                    array_push($consulta, [ 'vent.montototal', $opcion, $montoinicio ]);
+                }
+            }else {
+                if (!is_null($montoinicio) && is_null($montofinal)) {
+                    array_push($consulta, [ 'vent.montototal', '<=', $montoinicio ]);
+                }else {
+                    if (!is_null($montoinicio) && !is_null($montofinal)) {
+                        array_push($consulta, [ 'vent.montototal', '>=', $montoinicio ]);
+                        array_push($consulta, [ 'vent.montototal', '<=', $montofinal ]);
+                    }
+                }
+            }
+            array_push($consulta, ['vent.estado', '=', 'A']);
+
+            if ($venta == '1') {
+                $data = DB::table('venta as vent')
+                    ->leftJoin('cliente as cli', 'vent.idcliente', '=', 'cli.id')
+                    ->leftJoin('vehiculo as veh', 'vent.idvehiculo', '=', 'veh.id')
+                    ->leftJoin('marca as marc', 'veh.idmarca', '=', 'marc.id')
+                    ->leftJoin('users as user', 'vent.idusuario', '=', 'user.id')
+                    ->select('cli.nombre as cliente', 'cli.apellido as cliapellido', 'user.nombre as usuario', 'user.apellido as userapellido', 
+                        'veh.placa', 'marc.descripcion as marca', 'vent.descuento', 'vent.montototal', 'vent.fecha', 'vent.hora', 'vent.id'
+                    )
+                    ->where( $consulta )
+                    ->orderBy('vent.id')
+                    ->get();
+            }else {
+                $data = DB::table('venta as vent')
+                    ->leftJoin('cliente as cli', 'vent.idcliente', '=', 'cli.id')
+                    ->leftJoin('vehiculo as veh', 'vent.idvehiculo', '=', 'veh.id')
+                    ->leftJoin('marca as marc', 'veh.idmarca', '=', 'marc.id')
+                    ->leftJoin('users as user', 'vent.idusuario', '=', 'user.id')
+                    ->leftJoin('detalleventa as det', 'vent.id', '=', 'det.idventa')
+                    ->leftJoin('servicio as serv', 'det.idservicio', '=', 'serv.id')
+                    ->leftJoin('mecanico as mec', 'det.idmecanico', '=', 'mec.id')
+                    ->select('cli.nombre as cliente', 'cli.apellido as cliapellido', 'user.nombre as usuario', 'user.apellido as userapellido', 
+                        'veh.placa', 'marc.descripcion as marca', 'vent.descuento as decventa', 'vent.montototal', 'vent.fecha', 'vent.hora', 'vent.id',
+                        'det.precio', 'det.cantidad', 'det.descuento', 'det.montodescuento', 'serv.descripcion', 'serv.comision',
+                        'mec.nombre as mecanico', 'mec.apellido as mecapellido'
+                    )
+                    ->where( $consulta )
+                    ->orderBy('vent.id')
+                    ->get();
+            }
+
+
+            return response()->json([
+                'response'  => 1,
+                'data'      => $data,
+                'fechainicio'      => $fechainicio,
+            ]);
+
+        }catch(\Exception $th) {
+            return response()->json([
+                'response' => 0,
+                'message' => 'Error al procesar la solicitud',
+                'error' => [
+                    'file'    => $th->getFile(),
+                    'line'    => $th->getLine(),
+                    'message' => $th->getMessage()
+                ]
+            ]);
+        }
+    }
+
 }

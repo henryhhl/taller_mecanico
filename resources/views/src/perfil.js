@@ -41,7 +41,7 @@ class Perfil extends Component {
         }
     }
     componentDidMount() {
-        this.props.get_link('', true);
+        this.props.get_link('perfil', true);
         this.get_data();
     }
     get_data() {
@@ -237,6 +237,14 @@ class Perfil extends Component {
             });
         } );
     }
+    formato(date) {
+        let fecha = date.split('-');
+        let year = parseInt(fecha[0]);
+        let month = (parseInt(fecha[1]) < 10)?'0' + parseInt(fecha[1]):parseInt(fecha[1]);
+        let day = (parseInt(fecha[2]) < 10)?'0' + parseInt(fecha[2]):parseInt(fecha[2]);
+
+        return day + '/' + month + '/' + year;
+    }
     render() {
         var usuario =this.state.usuario;
         var colorsuccess = this.props.buttoncolor == '' ? 'primary' : this.props.buttoncolor;
@@ -336,7 +344,7 @@ class Perfil extends Component {
                                                         <div className="widget-content-left flex2">
                                                             <div className="widget-heading">Fecha de Nacimiento</div>
                                                             <div className="widget-subheading">
-                                                                { usuario.nacimiento == null ? ' - ': usuario.nacimiento }
+                                                                { usuario.nacimiento == null ? ' - ': this.formato(usuario.nacimiento) }
                                                             </div>
                                                         </div>
                                                         <div className="widget-content-right widget-content-actions">

@@ -71,6 +71,7 @@ import web from './utils/services';
 import Footer from './layouts/footer';
 import Ajuste from './ajuste';
 import Perfil from './perfil';
+import Reporte from './reporte';
 
 
 const objeto_vehiculo = { idvehiculo: null, placa: '',
@@ -83,6 +84,7 @@ export default class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading_page: false,
 
             layoutoption: {sidebarcolor: '', headercolor: '', footercolor: '',
                 plantillacolor: '', buttoncolor: '', sizetext: '',
@@ -228,6 +230,9 @@ export default class Index extends Component {
             },
             link: {
                 home: '',
+                perfil: '',
+                ajuste: '',
+                reporte: '',
                 usuario: '',
                 rol: '',
                 asignar_permiso: '',
@@ -282,6 +287,10 @@ export default class Index extends Component {
     get_data() {
         axios.get( web.servidor + '/usuario/get_information').then(
             (response) => {
+                if (response.data.response == -3) {
+                    this.onLogout();
+                    return;
+                }
                 if (response.data.response == 1) {
                     if (response.data.ajuste != null) {
                         this.state.layoutoption.headercolor = response.data.ajuste.colorheader == null ? '' : response.data.ajuste.colorheader;
@@ -290,13 +299,13 @@ export default class Index extends Component {
                         this.state.layoutoption.buttoncolor = response.data.ajuste.colorgeneral == null ? '' : response.data.ajuste.colorgeneral;
                         this.state.layoutoption.sizetext = response.data.ajuste.sizetext == null ? '' : response.data.ajuste.sizetext;
                     }
-                    console.log(response.data)
                     this.setState({
                         token: response.data.token,
                         usuario: response.data.usuario,
                         layoutoption: this.state.layoutoption,
                         sesion: true,
                         permisos_habilitados: response.data.permiso,
+                        loading_page: true,
                     });
                 }
             }
@@ -1313,6 +1322,8 @@ export default class Index extends Component {
         this.state.menu.servicio = '';
 
         this.state.link.home = '';
+        this.state.link.perfil = '';
+        this.state.link.ajuste = '';
         this.state.link.usuario = '';
         this.state.link.rol = '';
         this.state.link.venta = '';
@@ -1326,6 +1337,18 @@ export default class Index extends Component {
         if (link == 'home') {
             this.state.menu.dashboards = 'mm-active';
             this.state.link.home = 'mm-active';
+        }
+        if (link == 'perfil') {
+            this.state.menu.dashboards = 'mm-active';
+            this.state.link.perfil = 'mm-active';
+        }
+        if (link == 'ajuste') {
+            this.state.menu.dashboards = 'mm-active';
+            this.state.link.ajuste = 'mm-active';
+        }
+        if (link == 'reporte') {
+            this.state.menu.dashboards = 'mm-active';
+            this.state.link.reporte = 'mm-active';
         }
         if (link == 'usuario') {
             this.state.menu.seguridad = 'mm-active';
@@ -1493,6 +1516,20 @@ export default class Index extends Component {
                                                 loadingservice={this.loadingservice.bind(this)}
                                                 buttoncolor={this.state.layoutoption.buttoncolor}
                                                 updatePerfil={this.updatePerfil.bind(this)}
+                                                { ...props} 
+                                            />
+                                        } 
+                                    />
+
+                                    <Route exact path={ web.serv_link + '/reporte_general'} 
+                                        render={props => 
+                                            <Reporte 
+                                                get_link={this.get_link.bind(this)} 
+                                                logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
+                                                updatePerfil={this.updatePerfil.bind(this)}
+                                                loading_page={this.state.loading_page}
                                                 { ...props} 
                                             />
                                         } 
