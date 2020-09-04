@@ -62,6 +62,7 @@ class AjusteController extends Controller
         $cantidad = sizeof( DB::table('visitas')->whereNotNull('ajuste')->get() );
         return ' AJUSTE: ' . $cantidad;
     }
+<<<<<<< HEAD
 
     public function search_general(Request $request) {
         try {
@@ -94,6 +95,18 @@ class AjusteController extends Controller
         }
     }
 
+=======
+    public function search(Request $request){
+        $dato = strtolower($request->dato);
+        $marcas = DB::select("select * from marca where lower(descripcion) like '%$dato%' ");
+        $modelos = DB::select("select * from modelo where lower(descripcion) like '%$dato%' ");
+        $usuarios = DB::select("select * from users where lower(nombre) like '%$dato%' or  lower(apellido) like '%$dato%' or lower(usuario) like '%$dato%' ");
+        $vehiculotipo = DB::select("select * from vehiculotipo where lower(descripcion) like '%$dato%' ");
+        $vehiculo = DB::select("select * from vehiculo where lower(placa) like '%$dato%' or lower(nroserie) like '%$dato%' or lower(observacion) like '%$dato%' ");
+        $cliente = DB::select("select * from cliente where lower(nombre) like '%$dato%' or lower(apellido) like '%$dato%'or lower(razonsocial) like '%$dato%' or lower(nit) like '%dato%' or lower(telefono) like '%dato%' ");
+        
+    }
+>>>>>>> d5ccc42e1b0cc08b7b3282cb23d63b6a3debc9a0
     /**
      * Show the form for creating a new resource.
      *

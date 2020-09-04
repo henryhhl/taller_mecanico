@@ -26,12 +26,20 @@ class RolTableSeeder extends Seeder
         return [
             [
                 'nombre'       => 'ADMINISTRADOR',
-                'descripcion'  => 'Encargdo de todo el funcionamiento del sistema.',
+                'descripcion'  => 'Encargado de todo el funcionamiento del sistema.',
                 'estado'       => 'A',
                 'delete'       => 'A',
                 'fecha'        => $mytime->toDateString(),
                 'hora'         => $mytime->toTimeString(),
             ], //1
+            [
+                'nombre'       => 'VENDEDOR',
+                'descripcion'  => 'Encargado de realizar el ventas y servicios del sistema.',
+                'estado'       => 'A',
+                'delete'       => 'A',
+                'fecha'        => $mytime->toDateString(),
+                'hora'         => $mytime->toTimeString(),
+            ], //2
         ];
     }
 
