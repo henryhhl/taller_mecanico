@@ -41,11 +41,11 @@ class MecanicoController extends Controller
             }else {
                 $data = DB::table('mecanico')
                     ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'LIKE', '%'.$search.'%')
-                            ->orWhere('celular', 'LIKE', '%'.$search.'%')
-                            ->orWhere('direccion', 'LIKE', '%'.$search.'%')
-                            ->orWhere('telefono', 'LIKE', '%'.$search.'%');
+                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('celular', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('direccion', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('telefono', 'ILIKE', '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -130,9 +130,9 @@ class MecanicoController extends Controller
             }else {
                 $data = DB::table('mecanico')
                     ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'LIKE', '%'.$search.'%')
-                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), 'LIKE', '%'.$search.'%');
+                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
+                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), 'ILIKE', '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')

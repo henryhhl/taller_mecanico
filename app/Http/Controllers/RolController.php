@@ -118,7 +118,7 @@ class RolController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         try {
 
@@ -132,10 +132,12 @@ class RolController extends Controller
             }
 
             $array_usuario = DB::table('users as user')
+                ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
                 ->select('user.id', 'user.usuario', 'user.nombre', 'user.apellido', 'user.imagen', 'user.genero')
-                ->where(
-                    DB::raw('(SELECT COUNT(*) as cantidad FROM detalle_rol det WHERE det.idusuario = user.id AND det.estado="A")') , '=', '0'
-                )
+                ->where(function ($query) use ($request) {
+                    return $query->orWhere('det.estado', '=', 'N')
+                        ->orWhereNull('det.estado');
+                })
                 ->where('user.estado', '=', 'A')
                 ->orderBy('user.id', 'desc')
                 ->get();
@@ -358,11 +360,13 @@ class RolController extends Controller
                 ->where('id', '=', $id)
                 ->first();
 
-            $array_usuario = DB::table('users as user')
+                $array_usuario = DB::table('users as user')
+                ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
                 ->select('user.id', 'user.usuario', 'user.nombre', 'user.apellido', 'user.imagen', 'user.genero')
-                ->where(
-                    DB::raw('(SELECT COUNT(*) as cantidad FROM detalle_rol det WHERE det.idusuario = user.id AND det.estado="A")') , '=', '0'
-                )
+                ->where(function ($query) use ($id) {
+                    return $query->orWhere('det.estado', '=', 'N')
+                        ->orWhereNull('det.estado');
+                })
                 ->where('user.estado', '=', 'A')
                 ->orderBy('user.id', 'desc')
                 ->get();

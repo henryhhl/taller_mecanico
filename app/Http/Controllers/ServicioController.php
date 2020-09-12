@@ -42,7 +42,7 @@ class ServicioController extends Controller
                 $data = DB::table('servicio')
                     ->where(function ($query) use ($search) {
                         return $query->orWhere('descripcion', 'LIKE', '%'.$search.'%')
-                            ->orWhere('precio', 'LIKE', '%'.$search.'%');
+                            ->orWhere('precio', 'ILIKE', '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -211,7 +211,7 @@ class ServicioController extends Controller
             }else {
                 $data = DB::table('servicio')
                     ->where(function ($query) use ($search) {
-                        return $query->orWhere('descripcion', 'LIKE', '%'.$search.'%');
+                        return $query->orWhere('descripcion', 'ILIKE', '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')

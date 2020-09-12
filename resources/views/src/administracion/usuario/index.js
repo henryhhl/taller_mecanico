@@ -139,6 +139,7 @@ class IndexUsuario extends Component {
                                         <td>ID</td>
                                         <td>Nombre</td>
                                         <td>Usuario</td>
+                                        <td>ROL</td>
                                         <td>Opcion</td>
                                     </tr>
                                 </thead>
@@ -158,6 +159,10 @@ class IndexUsuario extends Component {
                                                 <td>
                                                     <label className='cols_show'>Usuario: </label>
                                                         {data.usuario}
+                                                </td>
+                                                <td>
+                                                    <label className='cols_show'>ROL: </label>
+                                                        {data.rol == null ? '-' : data.rol}
                                                 </td>
                                                 <td>
                                                     { isPermission(this.props.permisos_habilitados, permissions.usuarioeditar) ?

@@ -486,8 +486,19 @@ class CreateVenta extends Component {
                     }
                     if (response.data.response == 1) {
                         console.log(response.data)
+                        for (let index = 0; index < response.data.data.data.length; index++) {
+                            const element = response.data.data.data[index];
+                            if (element.tipo == 'S') {
+                                this.state.array_servicio.push(element);
+                            }
+                            if (element.tipo == 'P') {
+                                if (element.stockactual * 1 > 0) {
+                                    this.state.array_servicio.push(element);
+                                }
+                            }
+                        }
                         this.setState({
-                            array_servicio: response.data.data.data,
+                            array_servicio: this.state.array_servicio,
                             pagination_servicio: response.data.pagination,
                             pagina_servicio: response.data.data.data.length > 0 ? page : 0,
                             visible_servicio: true, search_servicio: '',
@@ -1985,7 +1996,7 @@ class CreateVenta extends Component {
                                                                     <Checkbox checked  style={{position: 'relative', left: 5, top: 1,}} />
                                                                 }
                                                             </div>
-                                                            {data.tipo == 'P' ? null :
+                                                            {/* {data.tipo == 'P' ? null :
                                                                 <div style={{paddingBottom: 7, }}>
                                                                     <a style={{color: 'blue',   paddingLeft: 4, paddingRight: 4, 
                                                                         fontSize: 12, border: '1px dashed blue', }}
@@ -1993,7 +2004,7 @@ class CreateVenta extends Component {
                                                                         {'ARTICULOS'} 
                                                                     </a>
                                                                 </div>
-                                                            }
+                                                            } */}
                                                         {/* </div> */}
                                                     </td>
                                                     <td style={{cursor: 'default', textAlign: 'right', paddingRight: 20, }}>

@@ -111,7 +111,7 @@ class ComponentToPrintDet extends React.Component {
                                         </th>
                                         <th style={{padding: 3, color: 'black', fontSize: 8 }}>
                                                 {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
-                                                    value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                                    value.mecanico : value.mecanico + ' ' + value.mecapellido
                                                 }
                                         </th>
                                         <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8 }}>
@@ -141,7 +141,7 @@ class ComponentToPrintDet extends React.Component {
                                     </th>
                                     <th style={{padding: 3, color: 'black', fontSize: 8, }}>
                                             {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
-                                                value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                                value.mecanico : value.mecanico + ' ' + value.mecapellido
                                             }
                                     </th>
                                     <th style={{padding: 3, textAlign: 'right', paddingRight: 5, color: 'black', fontSize: 8, }}>
@@ -697,7 +697,7 @@ export default class Reporte extends Component {
                                         <View style={{width: '30%', padding: 3, }}>
                                             <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
                                                 {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
-                                                    value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                                    value.mecanico : value.mecanico + ' ' + value.mecapellido
                                                 }
                                             </Text>
                                         </View>
@@ -741,7 +741,7 @@ export default class Reporte extends Component {
                                     <View style={{width: '30%', padding: 3, }}>
                                         <Text style={[ {color: 'black', fontWeight: 'bold', fontSize: 8,} ]}>
                                             {value.tipo == 'P' ? '-' : (value.mecanico == null) ? '-' : (value.mecapellido == null) ? 
-                                                value.mecanico : vaue.mecanico + ' ' + value.mecapellido
+                                                value.mecanico : value.mecanico + ' ' + value.mecapellido
                                             }
                                         </Text>
                                     </View>

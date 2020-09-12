@@ -40,10 +40,10 @@ class ClienteController extends Controller
             }else {
                 $data = DB::table('cliente')
                     ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'LIKE', '%'.$search.'%')
-                            ->orWhere('nit', 'LIKE', '%'.$search.'%')
-                            ->orWhere('telefono', 'LIKE', '%'.$search.'%');
+                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('nit', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('telefono', 'ILIKE', '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -137,10 +137,10 @@ class ClienteController extends Controller
             }else {
                 $data = DB::table('cliente')
                     ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'LIKE', '%'.$search.'%')
-                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), 'LIKE', '%'.$search.'%')
-                            ->orWhere('razonsocial', 'LIKE', '%'.$search.'%');
+                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
+                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), 'ILIKE', '%'.$search.'%')
+                            ->orWhere('razonsocial', 'ILIKE', '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -230,10 +230,10 @@ class ClienteController extends Controller
                     ->where('estado', '=', 'A')
                     ->where( function($query) use ($search) {
                         return $query
-                            ->where(DB::raw("CONCAT(nombre, ' ',apellido)"), 'LIKE', '%'.$search.'%')
-                            ->orWhere('nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'LIKE', '%'.$search.'%')
-                            ->orWhere('razonsocial', 'LIKE', '%'.$search.'%');
+                            ->where(DB::raw("CONCAT(nombre, ' ',apellido)"), 'ILIKE', '%'.$search.'%')
+                            ->orWhere('nombre', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
+                            ->orWhere('razonsocial', 'ILIKE', '%'.$search.'%');
                     })
                     ->orderBy('id', 'desc')
                     ->get()->take(20);

@@ -42,6 +42,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post( $servidor . '/logout', 'HomeController@logout');
 Route::get( $servidor . '/home/get_information', 'HomeController@get_information');
+Route::get( $servidor . '/usuario/inicio', 'UsuarioController@inicio');
 
 Route::get( $servidor . '/usuario/get_information', 'UsuarioController@get_information');
 
@@ -67,6 +68,7 @@ Route::post( $servidor . '/permiso/asignar', 'PermisoController@asignar');
 Route::get( $local . '/usuario', 'HomeController@index');
 Route::get( $local . '/usuario/create', 'HomeController@index');
 Route::get( $local . '/usuario/edit/{id}', 'HomeController@index');
+Route::get( $local . '/usuario/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/usuario/index', 'UsuarioController@index');
 Route::get( $servidor . '/usuario/create', 'UsuarioController@create');
@@ -91,6 +93,7 @@ Route::post( $servidor . '/vehiculotipo/delete', 'VehiculoTipoController@destroy
 
 Route::get( $local . '/vehiculo_marca/create', 'HomeController@index');
 Route::get( $local . '/vehiculo_marca/editar/{id}', 'HomeController@index');
+Route::get( $local . '/vehiculo_marca/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/vehiculo_marca/index', 'VehiculoMarcaController@index');
 Route::get( $servidor . '/vehiculo_marca/create', 'VehiculoMarcaController@create');
@@ -116,6 +119,7 @@ Route::post( $servidor . '/vehiculo_modelo/delete', 'VehiculoModeloController@de
 
 Route::get( $local . '/vehiculo_color/create', 'HomeController@index');
 Route::get( $local . '/vehiculo_color/editar/{id}', 'HomeController@index');
+Route::get( $local . '/vehiculo_color/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/vehiculo_color/index', 'VehiculoColorController@index');
 Route::get( $servidor . '/vehiculo_color/create', 'VehiculoColorController@create');
@@ -141,6 +145,7 @@ Route::post( $servidor . '/vehiculo_year/delete', 'VehiculoYearController@destro
 Route::get( $local . '/cliente', 'HomeController@index');
 Route::get( $local . '/cliente/create', 'HomeController@index');
 Route::get( $local . '/cliente/editar/{id}', 'HomeController@index');
+Route::get( $local . '/cliente/show/{id}', 'HomeController@index');
 
 
 Route::get( $servidor . '/cliente/index', 'ClienteController@index');
@@ -159,6 +164,7 @@ Route::get( $servidor . '/cliente/getultimo', 'ClienteController@getultimo');
 Route::get( $local . '/vehiculo', 'HomeController@index');
 Route::get( $local . '/vehiculo/create', 'HomeController@index');
 Route::get( $local . '/vehiculo/editar/{id}', 'HomeController@index');
+Route::get( $local . '/vehiculo/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/vehiculo/index', 'VehiculoController@index');
 Route::get( $servidor . '/vehiculo/get_data', 'VehiculoController@get_data');
@@ -174,6 +180,7 @@ Route::get( $servidor . '/vehiculo/get_modelomarca', 'VehiculoController@get_mod
 Route::get( $local . '/mecanico', 'HomeController@index');
 Route::get( $local . '/mecanico/create', 'HomeController@index');
 Route::get( $local . '/mecanico/editar/{id}', 'HomeController@index');
+Route::get( $local . '/mecanico/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/mecanico/index', 'MecanicoController@index');
 Route::get( $servidor . '/mecanico/search_name', 'MecanicoController@search_name');
@@ -186,6 +193,7 @@ Route::post( $servidor . '/mecanico/delete', 'MecanicoController@destroy');
 Route::get( $local . '/almacen', 'HomeController@index');
 Route::get( $local . '/almacen/create', 'HomeController@index');
 Route::get( $local . '/almacen/editar/{id}', 'HomeController@index');
+Route::get( $local . '/almacen/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/servicio/index', 'ServicioController@index');
 Route::get( $servidor . '/servicio/search_decripcion', 'ServicioController@search_decripcion');
@@ -201,6 +209,7 @@ Route::post( $servidor . '/servicio/delete', 'ServicioController@destroy');
 
 Route::get( $local . '/categoria/create', 'HomeController@index');
 Route::get( $local . '/categoria/editar/{id}', 'HomeController@index');
+Route::get( $local . '/categoria/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/categoria/index', 'CategoriaController@index');
 Route::get( $servidor . '/categoria/create', 'CategoriaController@create');
@@ -214,6 +223,7 @@ Route::post( $servidor . '/categoria/delete', 'CategoriaController@destroy');
 Route::get( $local . '/articulo', 'HomeController@index');
 Route::get( $local . '/articulo/create', 'HomeController@index');
 Route::get( $local . '/articulo/editar/{id}', 'HomeController@index');
+Route::get( $local . '/articulo/show/{id}', 'HomeController@index');
 
 
 Route::get( $servidor . '/articulo/index', 'ArticuloController@index');

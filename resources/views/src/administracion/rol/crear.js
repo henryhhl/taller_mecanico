@@ -53,7 +53,7 @@ class CreateRol extends Component {
                         this.props.logout();
                         return;
                     }
-                    if (response.data.response == 1) {
+                    if (response.data.response == 1) { 
                         for (let index = 0; index < response.data.array_usuario.length; index++) {
                             var data = response.data.array_usuario[index];
                             var usuario = data.apellido == null ? data.nombre : data.nombre + ' ' + data.apellido

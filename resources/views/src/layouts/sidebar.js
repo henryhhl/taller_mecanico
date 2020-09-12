@@ -214,13 +214,15 @@ export default class Sidebar extends Component {
                                 </li> : null 
                             }
 
+                        { isPermission(this.props.permisos_habilitados, permissions.paqueteseguridad) ?
                             <li>
                                 <Link to={ web.serv_link + '/reporte_general'} onClick={this.props.init} 
                                     className={this.props.link_active.reporte + ' ' + this.props.sizetext}
                                 >
                                     <i className="fa fa-clipboard"></i> REPORTE
                                 </Link>
-                            </li>
+                            </li> : null 
+                            }
 
                         </ul>
                     </div>

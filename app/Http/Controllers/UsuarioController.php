@@ -21,6 +21,75 @@ class UsuarioController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+
+    public function inicio() {
+
+        try {
+
+            $sesion = Auth::guest();
+
+            if ($sesion) {
+                return response()->json([
+                    'response' => -3,
+                    'sesion'   => $sesion,
+                ]);
+            }
+
+            $cliente = sizeof(DB::table('cliente')->where('estado', '=', 'A')->get());
+
+            $venta = DB::table('venta')
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $montotal = 0;
+
+            foreach ($venta as $data) {
+                $montotal += $data->montototal;
+            }
+
+            $data = DB::table('venta as vent')
+                ->leftJoin('cliente as cli', 'vent.idcliente', '=', 'cli.id')
+                ->leftJoin('vehiculo as veh', 'vent.idvehiculo', '=', 'veh.id')
+                ->leftJoin('marca as marc', 'veh.idmarca', '=', 'marc.id')
+                ->leftJoin('users as user', 'vent.idusuario', '=', 'user.id')
+                ->leftJoin('detalleventa as det', 'vent.id', '=', 'det.idventa')
+                ->leftJoin('servicio as serv', 'det.idservicio', '=', 'serv.id')
+                ->leftJoin('mecanico as mec', 'det.idmecanico', '=', 'mec.id')
+                ->select('cli.nombre as cliente', 'cli.apellido as cliapellido', 'user.nombre as usuario', 'user.apellido as userapellido', 
+                    'veh.placa', 'marc.descripcion as marca', 'vent.descuento as decventa', 'vent.montototal', 'vent.fecha', 'vent.hora', 'vent.id',
+                    'det.precio', 'det.cantidad', 'det.descuento', 'det.montodescuento', 'serv.descripcion', 'serv.comision',
+                    'mec.nombre as mecanico', 'mec.apellido as mecapellido', 'serv.id as idproducto', 'serv.tipo', 'vent.montodescuento as mtodescuento'
+                )
+                ->where( 'vent.estado', '=', 'A' )
+                ->orderBy('serv.id')
+                ->get();
+
+            $servicios = DB::table('servicio')
+                ->where('estado', '=', 'A')
+                ->orderBy('id')
+                ->get();
+            
+            return response()->json([
+                'response' => 1,
+                'cliente' => $cliente,
+                'totalventa' => sizeof($venta),
+                'montototal' => $montotal,
+                'data' => $data,
+                'servicio' => $servicios,
+            ]);
+        } catch(\Exception $th) {
+            return response()->json([
+                'response' => 0,
+                'message' => 'Error al procesar la solicitud',
+                'error' => [
+                    'file'    => $th->getFile(),
+                    'line'    => $th->getLine(),
+                    'message' => $th->getMessage()
+                ]
+            ]);
+        } 
+    }
+
     public function perfil() {
         try {
 
@@ -144,8 +213,10 @@ class UsuarioController extends Controller
             if ($search == null) {
 
                 $data = DB::table('users as user')
+                    ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
+                    ->leftJoin('rol as grupousuario', 'det.idrol', '=', 'grupousuario.id')
                     ->select('user.id', 'user.nombre', 'user.apellido', 'user.usuario', 'user.nacimiento', 
-                        'user.genero', 'user.tipo', 'user.estado'
+                        'user.genero', 'user.tipo', 'user.estado', 'grupousuario.nombre as rol'
                     )
                     ->where('user.estado', '=', 'A')
                     ->orderBy('user.id', 'desc')

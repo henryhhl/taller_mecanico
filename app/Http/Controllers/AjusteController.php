@@ -62,7 +62,6 @@ class AjusteController extends Controller
         $cantidad = sizeof( DB::table('visitas')->whereNotNull('ajuste')->get() );
         return ' AJUSTE: ' . $cantidad;
     }
-<<<<<<< HEAD
 
     public function search_general(Request $request) {
         try {
@@ -77,9 +76,84 @@ class AjusteController extends Controller
             }
             $search = $request->input('search');
 
+            $like = 'ILIKE';
+
+            $marca = DB::table('marca')
+                ->where('descripcion', $like, '%'.$search.'%')
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $modelo = DB::table('modelo')
+                ->where('descripcion', $like, '%'.$search.'%')
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $color = DB::table('vehiculocolor')
+                ->where('descripcion', $like, '%'.$search.'%')
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $vehiculo = DB::table('vehiculo')
+                ->where('placa', $like, '%'.$search.'%')
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $categoria = DB::table('categoria')
+                ->where('descripcion', $like, '%'.$search.'%')
+                ->where('estado', '=', 'A')
+                ->get();
+            
+            $articulo = DB::table('articulo')
+                ->where('descripcion', $like, '%'.$search.'%')
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $cliente = DB::table('cliente')
+                ->where(function ($query) use ($search, $like) {
+                        return $query->orWhere('nombre', $like, '%'.$search.'%')
+                            ->orWhere('apellido', $like, '%'.$search.'%')
+                            ->orWhere('telefono', $like, '%'.$search.'%');
+                    })
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $mecanico = DB::table('mecanico')
+                ->where(function ($query) use ($search, $like) {
+                    return $query->orWhere('nombre', $like, '%'.$search.'%')
+                        ->orWhere('apellido', $like, '%'.$search.'%')
+                        ->orWhere('telefono', $like, '%'.$search.'%');
+                    })
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $usuario = DB::table('users')
+                ->where(function ($query) use ($search, $like) {
+                    return $query->orWhere('nombre', $like, '%'.$search.'%')
+                        ->orWhere('apellido', $like, '%'.$search.'%')
+                        ->orWhere('usuario', $like, '%'.$search.'%');
+                    })
+                ->where('estado', '=', 'A')
+                ->get();
+
+            $servicio = DB::table('servicio')
+                ->where(function ($query) use ($search, $like) {
+                    return $query->orWhere('descripcion', $like, '%'.$search.'%');
+                })
+                ->where('estado', '=', 'A')
+                ->get();
+
             return response()->json([
                 'response' => 1,
                 'search' => $search,
+                'marca' => $marca,
+                'color' => $color,
+                'vehiculo' => $vehiculo,
+                'categoria' => $categoria,
+                'articulo' => $articulo,
+                'cliente' => $cliente,
+                'mecanico' => $mecanico,
+                'usuario' => $usuario,
+                'servicio' => $servicio,
             ]);
 
         }catch(\Exception $th) {
@@ -95,18 +169,6 @@ class AjusteController extends Controller
         }
     }
 
-=======
-    public function search(Request $request){
-        $dato = strtolower($request->dato);
-        $marcas = DB::select("select * from marca where lower(descripcion) like '%$dato%' ");
-        $modelos = DB::select("select * from modelo where lower(descripcion) like '%$dato%' ");
-        $usuarios = DB::select("select * from users where lower(nombre) like '%$dato%' or  lower(apellido) like '%$dato%' or lower(usuario) like '%$dato%' ");
-        $vehiculotipo = DB::select("select * from vehiculotipo where lower(descripcion) like '%$dato%' ");
-        $vehiculo = DB::select("select * from vehiculo where lower(placa) like '%$dato%' or lower(nroserie) like '%$dato%' or lower(observacion) like '%$dato%' ");
-        $cliente = DB::select("select * from cliente where lower(nombre) like '%$dato%' or lower(apellido) like '%$dato%'or lower(razonsocial) like '%$dato%' or lower(nit) like '%dato%' or lower(telefono) like '%dato%' ");
-        
-    }
->>>>>>> d5ccc42e1b0cc08b7b3282cb23d63b6a3debc9a0
     /**
      * Show the form for creating a new resource.
      *

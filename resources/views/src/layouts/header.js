@@ -9,7 +9,7 @@ import {withRouter, Link} from 'react-router-dom';
 import { notification, Dropdown, Menu, message } from 'antd';
 import 'antd/dist/antd.css';
 
-export default class Header extends Component {
+class Header extends Component {
 
     constructor(props) {
         super(props);
@@ -19,6 +19,16 @@ export default class Header extends Component {
             active_search: 'active',
             search: '',
             timeoutSearch: undefined,
+
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
         };
     }
 
@@ -40,6 +50,17 @@ export default class Header extends Component {
                     }
                     if (response.data.response == 1) {
                         console.log(response.data)
+                        this.setState({
+                            articulo: response.data.articulo,
+                            categoria: response.data.categoria,
+                            cliente: response.data.cliente,
+                            color: response.data.color,
+                            marca: response.data.marca,
+                            mecanico: response.data.mecanico,
+                            servicio: response.data.servicio,
+                            usuario: response.data.usuario,
+                            vehiculo: response.data.vehiculo,
+                        });
                         return;
                     }
                 }
@@ -47,6 +68,175 @@ export default class Header extends Component {
         ).catch( error => {
             message.error('HUBO PROBLEMA AL SOLICITUD SERVICIO');
         } );
+    }
+
+    onShowUsuario(id) {
+        console.log(id)
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/usuario/show/' + id);
+        }, 1000);
+    }
+
+    onShowVehiculo(id) {
+        console.log(id)
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/vehiculo/show/' + id);
+        }, 1000);
+    }
+
+    onShowServicio(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/almacen/show/' + id);
+        }, 1000);
+    }
+
+    onShowCliente(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/cliente/show/' + id);
+        }, 1000);
+    }
+
+    onShowMarca(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/vehiculo_marca/show/' + id);
+        }, 1000);
+    }
+    onShowColor(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/vehiculo_color/show/' + id);
+        }, 1000);
+    }
+    onShowMecanico(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/mecanico/show/' + id);
+        }, 1000);
+    }
+    onShowCategoria(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/categoria/show/' + id);
+        }, 1000);
+    }
+    onShowArticulo(id) {
+        this.setState({
+            visible_search: false,
+            search: '',
+            articulo: [],
+            categoria: [],
+            cliente: [],
+            color: [],
+            marca: [],
+            mecanico: [],
+            servicio: [],
+            usuario: [],
+            vehiculo: [],
+        });
+        setTimeout(() => {
+            this.props.history.push(web.serv_link + '/categoria/show/' + id);
+        }, 1000);
     }
 
     onchangeSearch(event) {
@@ -69,8 +259,298 @@ export default class Header extends Component {
         var usuario = this.props.usuario;
 
         const menushearch = (
-            <Menu style={{width: '200%'}}>
-                a
+            <Menu style={{width: '200%', height: 350, overflow: 'scroll'}}>
+
+                {this.state.articulo.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>ARTICULOS ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                    onClick={this.onShowArticulo.bind(this, data.id)}
+                                >
+                                    {data.descripcion}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal" 
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                onClick={this.onShowArticulo.bind(this, data.id)}
+                            >
+                                {data.descripcion}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.categoria.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>CATEGORIA ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                    onClick={this.onShowCategoria.bind(this, data.id)}
+                                >
+                                    {data.descripcion}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal" 
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                onClick={this.onShowCategoria.bind(this, data.id)}
+                            >
+                                {data.descripcion}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.cliente.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>CLIENTES ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                    onClick={this.onShowCliente.bind(this, data.id)}
+                                >
+                                    {data.nombre} - {data.apellido == null ? '' : data.apellido} - {data.telefono == null ? '' : data.telefono}
+                                    
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal" 
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                onClick={this.onShowCliente.bind(this, data.id)}
+                            >
+                                {data.nombre} - {data.apellido == null ? '' : data.apellido} - {data.telefono == null ? '' : data.telefono}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.color.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>COLORES ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                    onClick={this.onShowColor.bind(this, data.id)}
+                                >
+                                    {data.descripcion}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal" 
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                onClick={this.onShowColor.bind(this, data.id)}
+                            >
+                                {data.descripcion}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.marca.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>MARCA ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                    onClick={this.onShowMarca.bind(this, data.id)}
+                                >
+                                    {data.descripcion}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal" 
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                onClick={this.onShowMarca.bind(this, data.id)}
+                            >
+                                {data.descripcion}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.mecanico.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>MECANICOS ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal" 
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor:'pointer'}}
+                                    onClick={this.onShowMecanico.bind(this, data.id)}
+                                >
+                                    {data.nombre} - {data.apellido == null ? '' : data.apellido} - {data.telefono == null ? '' : data.telefono}
+                                    
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal"
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                onClick={this.onShowMecanico.bind(this, data.id)}
+                            >
+                                {data.nombre} - {data.apellido == null ? '' : data.apellido} - {data.telefono == null ? '' : data.telefono}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.servicio.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>SERVICIOS ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                    onClick={this.onShowServicio.bind(this, data.id)}
+                                >
+                                    {data.descripcion}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal"
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                onClick={this.onShowServicio.bind(this, data.id)}
+                            >
+                                {data.descripcion}
+                            </div>
+                        </div>
+                    );
+                } )}
+
+                {this.state.vehiculo.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>VEHICULOS ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                    onClick={this.onShowVehiculo.bind(this, data.id)}
+                                >
+                                    {data.descripcion}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal"
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                onClick={this.onShowVehiculo.bind(this, data.id)}
+                            >
+                                {data.descripcion}
+                            </div>
+                        </div>
+                    );
+                } )}
+                
+                {this.state.usuario.map( (data, key) => {
+                    if (key == 0) {
+                        return (
+                            <div style={{width: '100%',}} key={key}>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                                >
+                                    <strong>USUARIOS ENCONTRADOS</strong>
+                                </div>
+                                <div className="font-size-md text-capitalize font-weight-normal"
+                                    style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue'}}
+                                    onClick={this.onShowUsuario.bind(this, data.id)}
+                                >
+                                    {data.nombre} - {data.apellido == null ? '' : data.apellido} - {data.telefono == null ? '' : data.telefono}
+                                </div>
+                            </div>
+                        );
+                    }
+                    return (
+                        <div className="font-size-md text-capitalize font-weight-normal" key={key}
+                            style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8'}}
+                        >
+                            <div className="font-size-md text-capitalize font-weight-normal" 
+                                style={{paddingLeft: 10, paddingTop: 4, paddingBottom: 5, borderBottom: '1px solid #e8e8e8', color: 'blue', cursor: 'pointer'}}
+                                onClick={this.onShowUsuario.bind(this, data.id)}
+                            >
+                                {data.nombre} - {data.apellido == null ? '' : data.apellido} - { ' USUARIO: ' + data.usuario}
+                            </div>
+                        </div>
+                    );
+                } )}
+
             </Menu>
         );
 
@@ -212,325 +692,7 @@ export default class Header extends Component {
                     </div>
 
                     <div className="app-header-right">
-                        <div className="header-dots">
-                            
-                            <div className="dropdown">
-                                <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" className="p-0 mr-2 btn btn-link">
-                                    <span className="icon-wrapper icon-wrapper-alt rounded-circle">
-                                        <span className="icon-wrapper-bg bg-danger"></span>
-                                        <i className="icon text-danger icon-anim-pulse ion-android-notifications"></i>
-                                        <span className="badge badge-dot badge-dot-sm badge-danger">Notifications</span>
-                                    </span>
-                                </button>
-                                <div tabIndex="-1" role="menu" aria-hidden="true" className="dropdown-menu-xl rm-pointers dropdown-menu dropdown-menu-right">
-                                    <div className="dropdown-menu-header mb-0">
-                                        <div className="dropdown-menu-header-inner bg-deep-blue">
-                                            <div className="menu-header-image opacity-1" style={{'backgroundImage': 'url(/assets/images/dropdown-header/city3.jpg)'}}></div>
-                                            <div className="menu-header-content text-dark">
-                                                <h5 className="menu-header-title">Notifications</h5>
-                                                <h6 className="menu-header-subtitle">You have <b>21</b> unread messages</h6>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <ul className="tabs-animated-shadow tabs-animated nav nav-justified tabs-shadow-bordered p-3">
-                                        <li className="nav-item">
-                                            <a role="tab" className="nav-link active" data-toggle="tab" href="#tab-messages-header">
-                                                <span>Messages</span>
-                                            </a>
-                                        </li>
-                                        <li className="nav-item">
-                                            <a role="tab" className="nav-link" data-toggle="tab" href="#tab-events-header">
-                                                <span>Events</span>
-                                            </a>
-                                        </li>
-                                        <li className="nav-item">
-                                            <a role="tab" className="nav-link" data-toggle="tab" href="#tab-errors-header">
-                                                <span>System Errors</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div className="tab-content">
-                                        <div className="tab-pane active" id="tab-messages-header" role="tabpanel">
-                                            <div className="scroll-area-sm">
-                                                <div className="scrollbar-container">
-                                                    <div className="p-3">
-                                                        <div className="notifications-box">
-                                                            <div className="vertical-time-simple vertical-without-time vertical-timeline vertical-timeline--one-column">
-                                                                <div className="vertical-timeline-item dot-danger vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">All Hands Meeting</h4>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-warning vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <p>Yet another one, at <span className="text-success">15:00 PM</span></p>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-success vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">Build the production release
-                                                                                <span className="badge badge-danger ml-2">NEW</span>
-                                                                            </h4>
-                                                                            <span className="vertical-timeline-element-date"></span></div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-primary vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">Something not important
-                                                                                <div className="avatar-wrapper mt-2 avatar-wrapper-overlap">
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img
-                                                                                                src={ web.img_servidor + "/assets/images/avatars/1.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/2.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/3.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/4.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/5.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/9.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/7.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm">
-                                                                                        <div className="avatar-icon">
-                                                                                            <img src={ web.img_servidor + "/assets/images/avatars/8.jpg"}
-                                                                                                alt="" />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="avatar-icon-wrapper avatar-icon-sm avatar-icon-add">
-                                                                                        <div className="avatar-icon"><i>+</i></div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </h4>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-info vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">This dot has an info state</h4>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-danger vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">All Hands Meeting</h4>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-warning vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <p>Yet another one, at 
-                                                                                <span className="text-success">15:00 PM</span>
-                                                                            </p><span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-success vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">Build the production release
-                                                                                <span className="badge badge-danger ml-2">NEW</span>
-                                                                            </h4>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="vertical-timeline-item dot-dark vertical-timeline-element">
-                                                                    <div><span className="vertical-timeline-element-icon bounce-in"></span>
-                                                                        <div className="vertical-timeline-element-content bounce-in">
-                                                                            <h4 className="timeline-title">This dot has a dark state</h4>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane" id="tab-events-header" role="tabpanel">
-                                            <div className="scroll-area-sm">
-                                                <div className="scrollbar-container">
-                                                    <div className="p-3">
-                                                        <div className="vertical-without-time vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-success"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <h4 className="timeline-title">All Hands Meeting</h4>
-                                                                        <p>Lorem ipsum dolor sic amet, today at 
-                                                                            <a href="#">12:00 PM</a>
-                                                                        </p><span className="vertical-timeline-element-date"></span>
-                                                                        
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-warning"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <p>Another meeting today, at 
-                                                                            <b className="text-danger">12:00 PM</b>
-                                                                        </p>
-                                                                        <p>Yet another one, at <span className="text-success">15:00 PM</span></p>
-                                                                        <span className="vertical-timeline-element-date"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-danger"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <h4 className="timeline-title">Build the production release</h4>
-                                                                        <p>Lorem ipsum dolor sit amit,consectetur eiusmdd tempor incididunt ut 
-                                                                            labore et dolore magna elit enim at minim veniam quis nostrud
-                                                                        </p>
-                                                                        <span className="vertical-timeline-element-date"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-primary"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <h4 className="timeline-title text-success">Something not important</h4>
-                                                                        <p>Lorem ipsum dolor sit amit,consectetur elit enim at 
-                                                                            minim veniam quis nostrud</p>
-                                                                        <span className="vertical-timeline-element-date"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-success"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <h4 className="timeline-title">All Hands Meeting</h4>
-                                                                        <p>Lorem ipsum dolor sic amet, today at 
-                                                                            <a href="#">12:00 PM</a>
-                                                                        </p><span className="vertical-timeline-element-date"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-warning"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <p>Another meeting today, at <b className="text-danger">12:00 PM</b></p>
-                                                                        <p>Yet another one, at <span className="text-success">15:00 PM</span></p>
-                                                                        <span className="vertical-timeline-element-date"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-danger"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <h4 className="timeline-title">Build the production release</h4>
-                                                                        <p>Lorem ipsum dolor sit amit,consectetur eiusmdd tempor incididunt 
-                                                                            ut labore et dolore magna elit enim at minim veniam quis nostrud</p>
-                                                                            <span className="vertical-timeline-element-date"></span>
-                                                                        </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="vertical-timeline-item vertical-timeline-element">
-                                                                <div><span className="vertical-timeline-element-icon bounce-in">
-                                                                        <i className="badge badge-dot badge-dot-xl badge-primary"> </i>
-                                                                    </span>
-                                                                    <div className="vertical-timeline-element-content bounce-in">
-                                                                        <h4 className="timeline-title text-success">Something not important</h4>
-                                                                        <p>Lorem ipsum dolor sit amit,consectetur elit enim at minim veniam quis nostrud</p>
-                                                                        <span className="vertical-timeline-element-date"></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="tab-pane" id="tab-errors-header" role="tabpanel">
-                                            <div className="scroll-area-sm">
-                                                <div className="scrollbar-container">
-                                                    <div className="no-results pt-3 pb-0">
-                                                        <div className="swal2-icon swal2-success swal2-animate-success-icon">
-                                                            <div className="swal2-success-circular-line-left" style={{'backgroundColor': 'rgb(255, 255, 255)'}}></div>
-                                                            <span className="swal2-success-line-tip"></span>
-                                                            <span className="swal2-success-line-long"></span>
-                                                            <div className="swal2-success-ring"></div>
-                                                            <div className="swal2-success-fix" style={{'backgroundColor': 'rgb(255, 255, 255)'}}></div>
-                                                            <div className="swal2-success-circular-line-right" style={{'backgroundColor': 'rgb(255, 255, 255)'}}></div>
-                                                        </div>
-                                                        <div className="results-subtitle">All caught up!</div>
-                                                        <div className="results-title">There are no system errors!</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <ul className="nav flex-column">
-                                        <li className="nav-item-divider nav-item"></li>
-                                        <li className="nav-item-btn text-center nav-item">
-                                            <button className="btn-shadow btn-wide btn-pill btn btn-focus btn-sm">
-                                                View Latest Changes
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                        </div>
+                        
                         
                         <div className="header-btn-lg pr-0">
                             <div className="widget-content p-0">
@@ -581,4 +743,6 @@ Header.defaultProps = {
     token: '',
     headercolor: '',
 }
+
+export default withRouter(Header)
 

@@ -17,6 +17,7 @@ import EditarRol from './administracion/rol/editar';
 import IndexUsuario from './administracion/usuario';
 import CreateUsuario from './administracion/usuario/crear';
 import EditarUsuario from './administracion/usuario/editar';
+import ShowUsuario from './administracion/usuario/show';
 
 import IndexVehiculoTipo from './taller/vehiculotipo';
 import CreateVehiculoTipo from './taller/vehiculotipo/crear';
@@ -25,10 +26,12 @@ import EditarVehiculoTipo from './taller/vehiculotipo/editar';
 import IndexCliente from './servicio/cliente';
 import CreateCliente from './servicio/cliente/crear';
 import EditarCliente from './servicio/cliente/editar';
+import ShowCliente from './servicio/cliente/show';
 
 import IndexArticulo from './taller/articulo';
 import CreateArticulo from './taller/articulo/crear';
 import EditarArticulo from './taller/articulo/editar';
+import ShowArticulo from './taller/articulo/show';
 
 import IndexVehiculo from './taller/vehiculo';
 import CreateVehiculo from './taller/vehiculo/crear';
@@ -37,34 +40,41 @@ import EditarVehiculo from './taller/vehiculo/editar';
 import IndexMecanico from './servicio/mecanico';
 import CreateMecanico from './servicio/mecanico/crear';
 import EditarMecanico from './servicio/mecanico/editar';
+import ShowMecanico from './servicio/mecanico/show';
 
 import IndexServicio from './servicio/servicio';
 import CreateServicio from './servicio/servicio/crear';
 import EditarServicio from './servicio/servicio/editar';
+import ShowServicio from './servicio/servicio/show';
 
 import IndexVenta from './servicio/venta';
 import CreateVenta from './servicio/venta/crear';
 
 import CreateVehiculoMarca from './taller/marca/crear';
 import EditarVehiculoMarca from './taller/marca/editar';
+import ShowMarca from './taller/marca/show'
 
 import CreateVehiculoModelo from './taller/modelo/crear';
 import EditarVehiculoModelo from './taller/modelo/editar';
 
 import CreateVehiculoColor from './taller/color/crear';
 import EditarVehiculoColor from './taller/color/editar';
+import ShowColor from './taller/color/show';
 
 import CreateVehiculoYear from './taller/year/crear';
 import EditarVehiculoYear from './taller/year/editar';
 
 import CreateCategoria from './servicio/categoria/crear';
 import EditarCategoria from './servicio/categoria/editar';
+import ShowCategoria from './servicio/categoria/show';
 
 import Asignar_Permiso from './administracion/permiso/asignar';
 
 import IndexPromocion from './servicio/promocion';
 import CreatePromocion from './servicio/promocion/crear';
 import EditarPromocion from './servicio/promocion/editar';
+
+import ShowVehiculo from './taller/vehiculo/show'
 
 import { logo } from './utils/logo';
 import web from './utils/services';
@@ -1488,6 +1498,7 @@ export default class Index extends Component {
                                         render={props => 
                                             <Home get_link={this.get_link.bind(this)} 
                                                 logout={this.onLogout.bind(this)}
+                                                permisos_habilitados={this.state.permisos_habilitados}
                                                 { ...props} 
                                             />
                                         } 
@@ -1554,6 +1565,14 @@ export default class Index extends Component {
                                     <Route exact path={ web.serv_link + '/usuario/edit/:id' }
                                         render={props => 
                                             <EditarUsuario get_link={this.get_link.bind(this)} { ...props} 
+                                                logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
+                                            />} 
+                                    />    
+                                    <Route exact path={ web.serv_link + '/usuario/show/:id' }
+                                        render={props => 
+                                            <ShowUsuario get_link={this.get_link.bind(this)} { ...props} 
                                                 logout={this.onLogout.bind(this)}
                                                 loadingservice={this.loadingservice.bind(this)}
                                                 buttoncolor={this.state.layoutoption.buttoncolor}
@@ -1672,6 +1691,14 @@ export default class Index extends Component {
                                             buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
+                                    <Route exact path={ web.serv_link + '/cliente/show/:id'} 
+                                        render={props => 
+                                        <ShowCliente get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
 
 
                                     <Route exact path={ web.serv_link + '/vehiculo'} render={props => 
@@ -1731,6 +1758,18 @@ export default class Index extends Component {
                                             />} 
                                     />
 
+                                    <Route exact path={ web.serv_link + '/vehiculo/show/:id'} 
+                                        render={props => 
+                                            <ShowVehiculo get_link={this.get_link.bind(this)} { ...props} 
+                                                vehiculocreate={this.vehiculocreate.bind(this)}
+                                                initvehiculo={this.initvehiculo.bind(this)}
+                                                vehiculo={this.state.vehiculo_create}
+                                                logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
+                                            />} 
+                                    />
+
                                     <Route exact path={ web.serv_link + '/vehiculo_marca/create'} 
                                         render={props => 
                                         <CreateVehiculoMarca get_link={this.get_link.bind(this)} { ...props} 
@@ -1742,6 +1781,14 @@ export default class Index extends Component {
                                     <Route exact path={ web.serv_link + '/vehiculo_marca/editar/:id'} 
                                         render={props => 
                                         <EditarVehiculoMarca get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+                                    <Route exact path={ web.serv_link + '/vehiculo_marca/show/:id'} 
+                                        render={props => 
+                                        <ShowMarca get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
                                             loadingservice={this.loadingservice.bind(this)}
                                             buttoncolor={this.state.layoutoption.buttoncolor}
@@ -1776,6 +1823,14 @@ export default class Index extends Component {
                                     <Route exact path={ web.serv_link + '/vehiculo_color/editar/:id'} 
                                         render={props => 
                                         <EditarVehiculoColor get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+                                    <Route exact path={ web.serv_link + '/vehiculo_color/show/:id'} 
+                                        render={props => 
+                                        <ShowColor get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
                                             loadingservice={this.loadingservice.bind(this)}
                                             buttoncolor={this.state.layoutoption.buttoncolor}
@@ -1834,6 +1889,14 @@ export default class Index extends Component {
                                             buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
+                                    <Route exact path={ web.serv_link + '/mecanico/show/:id'} 
+                                        render={props => 
+                                        <ShowMecanico get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
 
                                     <Route exact path={ web.serv_link + '/almacen'} render={props => 
                                         <IndexServicio { ...props} 
@@ -1876,6 +1939,14 @@ export default class Index extends Component {
                                                 buttoncolor={this.state.layoutoption.buttoncolor}
                                             />} 
                                     />
+                                    <Route exact path={ web.serv_link + '/almacen/show/:id'} 
+                                        render={props => 
+                                            <ShowServicio get_link={this.get_link.bind(this)} { ...props} 
+                                                logout={this.onLogout.bind(this)}
+                                                loadingservice={this.loadingservice.bind(this)}
+                                                buttoncolor={this.state.layoutoption.buttoncolor}
+                                            />} 
+                                    />
 
 
                                     <Route exact path={ web.serv_link + '/categoria/create'} 
@@ -1889,6 +1960,14 @@ export default class Index extends Component {
                                     <Route exact path={ web.serv_link + '/categoria/editar/:id'} 
                                         render={props => 
                                         <EditarCategoria get_link={this.get_link.bind(this)} { ...props} 
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+                                    <Route exact path={ web.serv_link + '/categoria/show/:id'} 
+                                        render={props => 
+                                        <ShowCategoria get_link={this.get_link.bind(this)} { ...props} 
                                             logout={this.onLogout.bind(this)}
                                             loadingservice={this.loadingservice.bind(this)}
                                             buttoncolor={this.state.layoutoption.buttoncolor}
@@ -1913,6 +1992,14 @@ export default class Index extends Component {
                                     <Route exact path={ web.serv_link + '/articulo/editar/:id'} 
                                         render={props => 
                                         <EditarArticulo get_link={this.get_link.bind(this)} { ...props}
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+                                    <Route exact path={ web.serv_link + '/articulo/show/:id'} 
+                                        render={props => 
+                                        <ShowArticulo get_link={this.get_link.bind(this)} { ...props}
                                             logout={this.onLogout.bind(this)}
                                             loadingservice={this.loadingservice.bind(this)}
                                             buttoncolor={this.state.layoutoption.buttoncolor}
