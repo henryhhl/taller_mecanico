@@ -73,7 +73,9 @@ class IndexVenta extends Component {
     onAdd() {
         this.props.history.push( web.serv_link + '/mantenimiento/create');
     }
-    onShow(data) {}
+    onShow(data) {
+        this.props.history.push( web.serv_link + '/mantenimiento/show/' + data.id);
+    }
     onDelete(data) {
         this.props.onModalActive(data, 'venta');
     }
@@ -154,7 +156,7 @@ class IndexVenta extends Component {
                                                 </td>
                                                 <td>
                                                     <label className='cols_show'>CLIENTE: </label>
-                                                        {data.nombre == null ? 'S/CLIENTE' : data.apellido ? data.nombre : data.nombre + ' ' + data.apellido}
+                                                        {data.nombre == null ? 'S/CLIENTE' : data.apellido == null ? data.nombre : data.nombre + ' ' + data.apellido}
                                                 </td>
                                                 <td>
                                                     <label className='cols_show'>VEHICULO: </label>

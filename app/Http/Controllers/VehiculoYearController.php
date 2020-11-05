@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\VehiculoYear;
 use App\Visitas;
 use Carbon\Carbon;
@@ -31,6 +32,9 @@ class VehiculoYearController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('vehiculoyear')
                     ->select('id', 'descripcion')
@@ -40,7 +44,7 @@ class VehiculoYearController extends Controller
             }else {
                 $data = DB::table('vehiculoyear')
                     ->select('id', 'descripcion')
-                    ->where('descripcion', 'LIKE', '%'.$search.'%')
+                    ->where('descripcion', $searchlike, '%'.$search.'%')
                     ->where('estado', '=', 'A')
                     ->orderBy('descripcion', 'desc')
                     ->paginate(10);

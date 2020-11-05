@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\Servicio;
 use App\Visitas;
 use Carbon\Carbon;
@@ -33,6 +34,9 @@ class ServicioController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('servicio')
                     ->where('estado', '=', 'A')
@@ -40,9 +44,9 @@ class ServicioController extends Controller
                     ->paginate(10);
             }else {
                 $data = DB::table('servicio')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('descripcion', 'LIKE', '%'.$search.'%')
-                            ->orWhere('precio', 'ILIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('descripcion', $searchlike, '%'.$search.'%')
+                            ->orWhere('precio', $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -203,6 +207,9 @@ class ServicioController extends Controller
             $search = $request->input('search', null);
             $nropaginate = $request->input('nropaginate', 20);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('servicio')
                     ->where('estado', '=', 'A')
@@ -210,8 +217,8 @@ class ServicioController extends Controller
                     ->paginate($nropaginate);
             }else {
                 $data = DB::table('servicio')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('descripcion', 'ILIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('descripcion', $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')

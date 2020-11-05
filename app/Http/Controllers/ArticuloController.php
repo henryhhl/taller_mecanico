@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Articulo;
+use App\Functions;
 use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -31,6 +32,9 @@ class ArticuloController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('articulo')
                     ->where('estado', '=', 'A')
@@ -38,7 +42,7 @@ class ArticuloController extends Controller
                     ->paginate(10);
             }else {
                 $data = DB::table('articulo')
-                    ->where('descripcion', 'LIKE', '%'.$search.'%')
+                    ->where('descripcion', $searchlike, '%'.$search.'%')
                     ->where('estado', '=', 'A')
                     ->orderBy('descripcion', 'desc')
                     ->paginate(10);

@@ -100,7 +100,7 @@ export default class Sidebar extends Component {
                             
                             { isPermission(this.props.permisos_habilitados, permissions.paqueteseguridad) ?
                                 <li className={this.props.menu_active.seguridad}>
-                                    <a href="#">
+                                    <a href="#" onClick={ (event) => event.preventDefault() }>
                                         <i className="fa fa-clone pe-7s-rocket"></i>
                                             <label className={this.props.sizetext}> SEGURIDAD </label>
                                         <i className="metismenu-state-icon pe-7s-angle-down fa fa-angle-double-down"></i>
@@ -143,7 +143,7 @@ export default class Sidebar extends Component {
                             { isPermission(this.props.permisos_habilitados, permissions.paqueteservicio) ?
 
                                 <li className={this.props.menu_active.servicio}>
-                                    <a href="#" className={ this.props.sizetext }>
+                                    <a href="#" className={ this.props.sizetext } onClick={ (event) => event.preventDefault() }>
                                         <i className="fa fa-clone pe-7s-rocket"></i>
                                             <label className={this.props.sizetext}> SERVICIO </label>
                                         <i className="metismenu-state-icon pe-7s-angle-down fa fa-angle-double-down"></i>
@@ -195,7 +195,7 @@ export default class Sidebar extends Component {
                                                     className={this.props.link_active.almacen + ' ' + this.props.sizetext}
                                                 >
                                                     <i className="metismenu-icon">
-                                                    </i>Almacen
+                                                    </i>Servicio
                                                 </Link>
                                             </li> : null 
                                         }

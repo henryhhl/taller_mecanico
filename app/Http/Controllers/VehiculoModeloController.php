@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\Modelo;
 use App\Visitas;
 use Carbon\Carbon;
@@ -31,6 +32,9 @@ class VehiculoModeloController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('modelo as mod')
                     ->join('marca as ma', 'mod.idmarca', '=', 'ma.id')
@@ -42,9 +46,9 @@ class VehiculoModeloController extends Controller
                 $data = DB::table('modelo as mod')
                     ->join('marca as ma', 'mod.idmarca', '=', 'ma.id')
                     ->select('mod.id', 'mod.descripcion', 'ma.descripcion as marca')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('mod.descripcion', 'LIKE', '%'.$search.'%')
-                            ->orWhere('ma.descripcion', 'LIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('mod.descripcion', $searchlike, '%'.$search.'%')
+                            ->orWhere('ma.descripcion', $searchlike, '%'.$search.'%');
                     })
                     ->where('mod.estado', '=', 'A')
                     ->orderBy('ma.id', 'asc')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\Vehiculo;
 use App\VehiculoImagen;
 use App\Visitas;
@@ -71,6 +72,9 @@ class VehiculoController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('vehiculo as v')
                     ->join('vehiculotipo as vt', 'v.idvehiculotipo', '=', 'vt.id')
@@ -95,12 +99,12 @@ class VehiculoController extends Controller
                         'c.nombre', 'c.apellido'
                     )
                     ->where('v.estado', '=', 'A')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere(DB::raw("CONCAT(c.nombre, ' ',c.apellido)"), 'LIKE', "%".$search."%")
-                            ->orWhere('v.placa', 'LIKE', '%'.$search.'%')
-                            ->orWhere('m.descripcion', 'LIKE', '%'.$search.'%')
-                            ->orWhere('mod.descripcion', 'LIKE', '%'.$search.'%')
-                            ->orWhere('vt.descripcion', 'LIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere(DB::raw("CONCAT(c.nombre, ' ',c.apellido)"), $searchlike, "%".$search."%")
+                            ->orWhere('v.placa', $searchlike, '%'.$search.'%')
+                            ->orWhere('m.descripcion', $searchlike, '%'.$search.'%')
+                            ->orWhere('mod.descripcion', $searchlike, '%'.$search.'%')
+                            ->orWhere('vt.descripcion', $searchlike, '%'.$search.'%');
                     })
                     ->orderBy('v.id', 'desc')
                     ->paginate(10);

@@ -49,6 +49,7 @@ import ShowServicio from './servicio/servicio/show';
 
 import IndexVenta from './servicio/venta';
 import CreateVenta from './servicio/venta/crear';
+import ShowVenta from './servicio/venta/show';
 
 import CreateVehiculoMarca from './taller/marca/crear';
 import EditarVehiculoMarca from './taller/marca/editar';
@@ -2035,6 +2036,20 @@ export default class Index extends Component {
                                             buttoncolor={this.state.layoutoption.buttoncolor}
                                         />} 
                                     />
+                                    <Route exact path={ web.serv_link + '/mantenimiento/show/:id'} 
+                                        render={props => 
+                                        <ShowVenta get_link={this.get_link.bind(this)} { ...props} 
+
+                                            venta={this.state.venta_create}
+                                            ventacreate={this.ventacreate.bind(this)}
+                                            initventa={this.initventa.bind(this)}
+                                            logout={this.onLogout.bind(this)}
+                                            loadingservice={this.loadingservice.bind(this)}
+
+                                            buttoncolor={this.state.layoutoption.buttoncolor}
+                                        />} 
+                                    />
+
 
                                     <Route exact path={ web.serv_link + '/promocion'} render={props => 
                                         <IndexPromocion { ...props} 

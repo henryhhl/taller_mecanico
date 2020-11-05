@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\Promocion;
 use App\PromocionDetalle;
 use App\Visitas;
@@ -32,6 +33,9 @@ class PromocionController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('promocion')
                     ->where('estado', '=', 'A')
@@ -39,7 +43,7 @@ class PromocionController extends Controller
                     ->paginate(10);
             }else {
                 $data = DB::table('promocion')
-                    ->where('descripcion', 'LIKE', '%'.$search.'%')
+                    ->where('descripcion', $searchlike, '%'.$search.'%')
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
                     ->paginate(10);

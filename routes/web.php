@@ -236,9 +236,11 @@ Route::post( $servidor . '/articulo/delete', 'ArticuloController@destroy');
 
 Route::get( $local . '/mantenimiento', 'HomeController@index');
 Route::get( $local . '/mantenimiento/create', 'HomeController@index');
+Route::get( $local . '/mantenimiento/show/{id}', 'HomeController@index');
 
 Route::get( $servidor . '/venta/index', 'VentaController@index');
 Route::get( $servidor . '/venta/create', 'VentaController@create');
+Route::get( $servidor . '/venta/show/{id}', 'VentaController@show');
 Route::post( $servidor . '/venta/store', 'VentaController@store');
 Route::post( $servidor . '/venta/delete', 'VentaController@destroy');
 Route::get( $servidor . '/venta/vehiculo_cliente', 'VentaController@vehiculo_cliente');

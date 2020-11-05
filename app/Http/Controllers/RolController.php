@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Detalle_Permiso;
 use App\Detalle_Rol;
+use App\Functions;
 use App\Rol;
 use App\Visitas;
 use Carbon\Carbon;
@@ -33,6 +34,9 @@ class RolController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('rol')
                     ->select('id', 'nombre', 'descripcion', 'estado')
@@ -42,8 +46,8 @@ class RolController extends Controller
             }else {
                 $data = DB::table('rol')
                     ->select('id', 'nombre', 'descripcion', 'estado')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'LIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('nombre', $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -360,7 +364,7 @@ class RolController extends Controller
                 ->where('id', '=', $id)
                 ->first();
 
-                $array_usuario = DB::table('users as user')
+            $array_usuario = DB::table('users as user')
                 ->leftJoin('detalle_rol as det', 'user.id', '=', 'det.idusuario')
                 ->select('user.id', 'user.usuario', 'user.nombre', 'user.apellido', 'user.imagen', 'user.genero')
                 ->where(function ($query) use ($id) {

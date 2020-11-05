@@ -486,6 +486,7 @@ class CreateVenta extends Component {
                     }
                     if (response.data.response == 1) {
                         console.log(response.data)
+                        this.state.array_servicio = [];
                         for (let index = 0; index < response.data.data.data.length; index++) {
                             const element = response.data.data.data[index];
                             if (element.tipo == 'S') {
@@ -685,17 +686,18 @@ class CreateVenta extends Component {
                     >
                         NUEVO CLIENTE
                     </button>
-                    <div className='forms-groups' style={{display: 'flex', justifyContent: 'center', paddingBottom: 10,}}>
+                    {/* <div className='forms-groups' style={{display: 'flex', justifyContent: 'center', paddingBottom: 10,}}>
                         <div className={`search-wrapper ${this.state.active_searchcliente}`}>
                             <div className="input-holder">
                                 <input type="text" className="search-input" placeholder="Ingresar Dato..." 
-                                    value={this.state.search_cliente} onChange={(event) => this.setState({search_cliente: event.target.value,}) }
+                                    value={this.state.search_cliente} 
+                                    onChange={(event) => this.setState({search_cliente: event.target.value,}) }
                                 />
                                 <button className="search-icon" onClick={ () => this.setState({active_searchcliente: 'active'}) }><span></span></button>
                             </div>
                             <button className="close" onClick={ () => this.setState({ active_searchcliente: '', search_cliente: '', }) }></button>
                         </div>
-                    </div>
+                    </div> */}
                     <Card title="LISTADO DE CLIENTE" 
                         bodyStyle={{ padding: 0, paddingRight: 20, paddingLeft: 5, }}
                         headStyle={{color: 'white', fontSize: 14, background: '#1890ff', fontWeight: 'bold',}}
@@ -802,7 +804,7 @@ class CreateVenta extends Component {
                     >
                         NUEVO MECANICO
                     </button>
-                    <div className='forms-groups' style={{display: 'flex', justifyContent: 'center', paddingBottom: 10,}}>
+                    {/* <div className='forms-groups' style={{display: 'flex', justifyContent: 'center', paddingBottom: 10,}}>
                         <div className={`search-wrapper ${this.state.active_searchmecanico}`}>
                             <div className="input-holder">
                                 <input type="text" className="search-input" placeholder="Ingresar Dato..." 
@@ -812,7 +814,7 @@ class CreateVenta extends Component {
                             </div>
                             <button className="close" onClick={ () => this.setState({ active_searchmecanico: '', search_mecanico: '', }) }></button>
                         </div>
-                    </div>
+                    </div> */}
                     <Card title="LISTADO DE MECANICO" 
                         bodyStyle={{ padding: 0, }}
                         headStyle={{color: 'white', background: '#1890ff', fontWeight: 'bold', fontSize: 14, }}
@@ -890,9 +892,9 @@ class CreateVenta extends Component {
                         }}
                         style={{position: 'absolute', top: 2, left: 20, }}
                     >
-                        NUEVO SERVICIO/PRODUCTO
+                        NUEVO SERVICIO
                     </button>
-                    <div className='forms-groups' style={{display: 'flex', justifyContent: 'center', paddingBottom: 20,}}>
+                    {/* <div className='forms-groups' style={{display: 'flex', justifyContent: 'center', paddingBottom: 20,}}>
                         <div className={`search-wrapper ${this.state.active_searchservicio}`}>
                             <div className="input-holder">
                                 <input type="text" className="search-input" placeholder="Ingresar Dato..." 
@@ -902,8 +904,8 @@ class CreateVenta extends Component {
                             </div>
                             <button className="close" onClick={ () => this.setState({ active_searchservicio: '', search_servicio: '', }) }></button>
                         </div>
-                    </div>
-                    <Card title="LISTADO DE SERVICIO/PRODUCTO" 
+                    </div> */}
+                    <Card title="LISTADO DE SERVICIO" 
                         bodyStyle={{ padding: 0, paddingRight: 20, paddingLeft: 5, }}
                         headStyle={{color: 'white', background: '#1890ff', fontSize: 14, fontWeight: 'bold',}}
                     >
@@ -1694,7 +1696,7 @@ class CreateVenta extends Component {
                         <div className='cols-lg-4 cols-md-4 cols-sm-12 cols-xs-12'>
                             <div className='inputs-groups'>
                                 <input type='text' className={`forms-control title_form ${this.props.buttoncolor}`} 
-                                    value={'Servicio/Producto'} readOnly
+                                    value={'Servicio'} readOnly
                                 />
                             </div>
                         </div>
@@ -1703,7 +1705,7 @@ class CreateVenta extends Component {
                                 <input type='text'
                                     className={`forms-control ${this.state.error_servicio}`}
                                     value={this.state.search_servicio}
-                                    placeholder='Search Producto / Servicio...'
+                                    placeholder='Search Servicio...'
                                     onChange={ (event) => this.setState({
                                         search_servicio: event.target.value, error_servicio: '',
                                     }) }

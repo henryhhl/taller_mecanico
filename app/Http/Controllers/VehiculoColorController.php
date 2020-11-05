@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\VehiculoColor;
 use App\Visitas;
 use Carbon\Carbon;
@@ -31,6 +32,9 @@ class VehiculoColorController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('vehiculocolor')
                     ->select('id', 'descripcion')
@@ -40,7 +44,7 @@ class VehiculoColorController extends Controller
             }else {
                 $data = DB::table('vehiculocolor')
                     ->select('id', 'descripcion')
-                    ->where('descripcion', 'LIKE', '%'.$search.'%')
+                    ->where('descripcion', $searchlike, '%'.$search.'%')
                     ->where('estado', '=', 'A')
                     ->orderBy('descripcion', 'asc')
                     ->paginate(10);

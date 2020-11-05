@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\Mecanico;
 use App\Visitas;
 use Carbon\Carbon;
@@ -33,6 +34,9 @@ class MecanicoController extends Controller
             $search = $request->input('search', null);
             $nropaginate = $request->input('nropaginate', 10);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('mecanico')
                     ->where('estado', '=', 'A')
@@ -40,12 +44,12 @@ class MecanicoController extends Controller
                     ->paginate($nropaginate);
             }else {
                 $data = DB::table('mecanico')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('celular', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('direccion', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('telefono', 'ILIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('apellido', $searchlike, '%'.$search.'%')
+                            ->orWhere('celular', $searchlike, '%'.$search.'%')
+                            ->orWhere('direccion', $searchlike, '%'.$search.'%')
+                            ->orWhere('telefono', $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -122,6 +126,9 @@ class MecanicoController extends Controller
             $search = $request->input('search', null);
             $nropaginate = $request->input('nropaginate', 20);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('mecanico')
                     ->where('estado', '=', 'A')
@@ -129,10 +136,10 @@ class MecanicoController extends Controller
                     ->paginate($nropaginate);
             }else {
                 $data = DB::table('mecanico')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
-                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), 'ILIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('apellido', $searchlike, '%'.$search.'%')
+                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')

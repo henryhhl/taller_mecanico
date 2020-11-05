@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DetalleVenta;
+use App\Functions;
 use App\Venta;
 use App\Visitas;
 use Carbon\Carbon;
@@ -33,6 +34,9 @@ class VentaController extends Controller
             $search = $request->input('search', null);
             $number = is_numeric($search) ? $search : -1;
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
 
                 $data = DB::table('venta as vta')
@@ -55,11 +59,11 @@ class VentaController extends Controller
                         'vta.montodescuento', 'vta.cantidadtotal', 'vta.nota', 'cl.nombre', 'cl.apellido',
                         'veh.placa'
                     )
-                    ->where(function ($query) use ($search, $number) {
-                        return $query->orWhere(DB::raw("CONCAT(cl.nombre, ' ',cl.apellido)"), 'LIKE', "%".$search."%")
-                            ->orWhere('veh.placa', 'LIKE', '%'.$search.'%')
-                            ->orWhere('cl.nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('cl.apellido', 'LIKE', '%'.$search.'%')
+                    ->where(function ($query) use ($search, $number, $searchlike) {
+                        return $query->orWhere(DB::raw("CONCAT(cl.nombre, ' ',cl.apellido)"), $searchlike, "%".$search."%")
+                            ->orWhere('veh.placa', $searchlike, '%'.$search.'%')
+                            ->orWhere('cl.nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('cl.apellido', $searchlike, '%'.$search.'%')
                             ->orWhere('vta.cantidadtotal', '=', $number)
                             ->orWhere('vta.descuento', '=', $number)
                             ->orWhere('vta.montototal', '=', $number);
@@ -287,7 +291,78 @@ class VentaController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+
+            $sesion = Auth::guest();
+
+            if ($sesion) {
+                return response()->json([
+                    'response' => -3,
+                    'sesion'   => $sesion,
+                ]);
+            }
+
+            $venta = DB::table('venta as vta')
+                ->leftJoin('cliente as cli', 'vta.idcliente', '=', 'cli.id')
+                ->leftJoin('vehiculo as veh', 'vta.idvehiculo', '=', 'veh.id')
+                ->leftJoin('vehiculotipo as vehtipo', 'veh.idvehiculotipo', '=', 'vehtipo.id')
+                ->leftJoin('marca as marc', 'veh.idmarca', '=', 'marc.id')
+                ->leftJoin('vehiculocolor as vehcolor', 'veh.idvehiculocolor', '=', 'vehcolor.id')
+                ->leftJoin('vehiculoyear as vehyear', 'veh.idvehiculoyear', '=', 'vehyear.id')
+                ->leftJoin('modelo as vehmod', 'veh.idmodelo', '=', 'vehmod.id')
+                ->select('vta.*', 'cli.nombre', 'cli.apellido', 'cli.razonsocial', 'cli.nit', 'cli.telefono',
+                    'cli.email', 'cli.celular', 'veh.placa', 'veh.nroserie',
+                    'vehtipo.descripcion as tipo', 'marc.descripcion as marca', 'vehcolor.descripcion as color',
+                    'vehyear.descripcion as year', 'vehmod.descripcion as modelo'
+                )
+                ->where('vta.estado', '=', 'A')
+                ->first();
+
+            $detalle = DB::table('detalleventa as det')
+                ->leftJoin('mecanico as mec', 'det.idmecanico', '=', 'mec.id')
+                ->leftJoin('servicio as serv', 'det.idservicio', '=', 'serv.id')
+                ->select('det.*', 'serv.comision',
+                    'mec.ci', 'mec.nombre', 'mec.apellido', 'mec.telefono', 'mec.email', 'mec.celular',
+                    'serv.descripcion', 'serv.codigo', 'serv.stockactual', 'serv.tipo', 'serv.imagen', 'serv.costo'
+                )
+                ->where('det.estado', '=', 'A')
+                ->where('det.idventa', '=', $id)
+                ->get();
+
+
+            $array_vehiculo = DB::table('vehiculo as veh')
+                ->leftJoin('vehiculotipo as vehtipo', 'veh.idvehiculotipo', '=', 'vehtipo.id')
+                ->leftJoin('marca as marc', 'veh.idmarca', '=', 'marc.id')
+                ->leftJoin('vehiculocolor as vehcolor', 'veh.idvehiculocolor', '=', 'vehcolor.id')
+                ->leftJoin('vehiculoyear as vehyear', 'veh.idvehiculoyear', '=', 'vehyear.id')
+                ->leftJoin('modelo as vehmod', 'veh.idmodelo', '=', 'vehmod.id')
+                ->select('veh.id as idvehiculo', 'veh.nroserie as serie', 'veh.placa', 
+                    'vehtipo.descripcion as tipo', 'marc.descripcion as marca', 'vehcolor.descripcion as color',
+                    'vehyear.descripcion as year', 'vehmod.descripcion as modelo'
+                )
+                ->where('veh.idcliente', '=', $venta->idcliente)
+                ->orderBy('veh.id')
+                ->get();
+            
+            return response()->json([
+                'response' => 1,
+                'data' => $venta,
+                'detalle' => $detalle,
+                'array_vehiculo' => $array_vehiculo,
+                'visitasitio' => $this->getvisitasitio(3),
+            ]);
+
+        }catch(\Exception $th) {
+            return response()->json([
+                'response' => 0,
+                'message' => 'Error al procesar la solicitud',
+                'error' => [
+                    'file'    => $th->getFile(),
+                    'line'    => $th->getLine(),
+                    'message' => $th->getMessage()
+                ]
+            ]);
+        }
     }
 
     /**

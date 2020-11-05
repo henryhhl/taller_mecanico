@@ -226,7 +226,7 @@ class IndexServicio extends Component {
     }
     render() {
         let nuevo = this.props.activeKey;
-        nuevo = (nuevo == 1) ? 'Nuevo Producto o Servicio' : (nuevo == 2) ? 'Nueva Categoria' : 'Nuevo Articulo';
+        nuevo = (nuevo == 1) ? 'Nuevo Servicio' : (nuevo == 2) ? 'Nueva Categoria' : 'Nuevo Articulo';
 
         var color = this.props.buttoncolor == '' ? 'outline-focus' : this.props.buttoncolor;
         var optioneditar = this.props.buttoncolor == '' ? 'primary' : 'outline-' + this.props.buttoncolor;
@@ -238,7 +238,7 @@ class IndexServicio extends Component {
                     <div className="card-header-tab card-header mt-4">
                         <div className="card-header-title font-size-lg text-capitalize font-weight-normal mb-4">
                             <i className="header-icon lnr-charts icon-gradient bg-happy-green"> </i>
-                                ALMACEN
+                                SERVICIO
                         </div>
                         <div className="app-header-left mb-4 ml-4">
                             <div className={`search-wrapper ${this.state.active_search}`}>
@@ -263,7 +263,7 @@ class IndexServicio extends Component {
                         <Tabs type="card" activeKey={this.props.activeKey} 
                             onChange={(key) => { this.props.activeKeyAlmacen(key); this.setState({ search: '', }); }}
                         >
-                            <TabPane style={{width: '100%', maxWidth: '100%'}} tab="PRODUCTO Y SERVICIO" key="1">
+                            <TabPane style={{width: '100%', maxWidth: '100%'}} tab="SERVICIO" key="1">
                                 <div className="forms-groups">
                                     <div className="tabless">
                                         <table className="tables-respons">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Ajuste;
+use App\Functions;
 use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -76,7 +77,10 @@ class AjusteController extends Controller
             }
             $search = $request->input('search');
 
-            $like = 'ILIKE';
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
+            $like = $searchlike;
 
             $marca = DB::table('marca')
                 ->where('descripcion', $like, '%'.$search.'%')

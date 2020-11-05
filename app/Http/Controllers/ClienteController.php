@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Cliente;
+use App\Functions;
 use App\Visitas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -32,6 +33,9 @@ class ClienteController extends Controller
 
             $search = $request->input('search', null);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('cliente')
                     ->where('estado', '=', 'A')
@@ -39,11 +43,11 @@ class ClienteController extends Controller
                     ->paginate(10);
             }else {
                 $data = DB::table('cliente')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('nit', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('telefono', 'ILIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('apellido', $searchlike, '%'.$search.'%')
+                            ->orWhere('nit', $searchlike, '%'.$search.'%')
+                            ->orWhere('telefono', $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -129,6 +133,9 @@ class ClienteController extends Controller
             $search = $request->input('search', null);
             $nropaginate = $request->input('nropaginate', 20);
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
                 $data = DB::table('cliente')
                     ->where('estado', '=', 'A')
@@ -136,11 +143,11 @@ class ClienteController extends Controller
                     ->paginate($nropaginate);
             }else {
                 $data = DB::table('cliente')
-                    ->where(function ($query) use ($search) {
-                        return $query->orWhere('nombre', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
-                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), 'ILIKE', '%'.$search.'%')
-                            ->orWhere('razonsocial', 'ILIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere('nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('apellido', $searchlike, '%'.$search.'%')
+                            ->orWhere(DB::raw("CONCAT(nombre, ' ',apellido)"), $searchlike, '%'.$search.'%')
+                            ->orWhere('razonsocial', $searchlike, '%'.$search.'%');
                     })
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
@@ -224,16 +231,19 @@ class ClienteController extends Controller
             $search = $request->filled('search') ? $request->input('search', null) : null;
             $search = $search == '' ? null : $search;
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search != null) {
 
                 $data = DB::table('cliente')
                     ->where('estado', '=', 'A')
-                    ->where( function($query) use ($search) {
+                    ->where( function($query) use ($search, $searchlike) {
                         return $query
-                            ->where(DB::raw("CONCAT(nombre, ' ',apellido)"), 'ILIKE', '%'.$search.'%')
-                            ->orWhere('nombre', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('apellido', 'ILIKE', '%'.$search.'%')
-                            ->orWhere('razonsocial', 'ILIKE', '%'.$search.'%');
+                            ->where(DB::raw("CONCAT(nombre, ' ',apellido)"), $searchlike, '%'.$search.'%')
+                            ->orWhere('nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('apellido', $searchlike, '%'.$search.'%')
+                            ->orWhere('razonsocial', $searchlike, '%'.$search.'%');
                     })
                     ->orderBy('id', 'desc')
                     ->get()->take(20);

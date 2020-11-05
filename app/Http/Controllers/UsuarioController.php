@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ajuste;
 use App\Detalle_Rol;
+use App\Functions;
 use App\Rol;
 use App\User;
 use App\Visitas;
@@ -210,6 +211,9 @@ class UsuarioController extends Controller
             $search = $request->input('search', null);
             $number = is_numeric($search) ? $search : -1;
 
+            $func = new Functions();
+            $searchlike = $func->searchbd();
+
             if ($search == null) {
 
                 $data = DB::table('users as user')
@@ -228,11 +232,11 @@ class UsuarioController extends Controller
                     ->select('user.id', 'user.nombre', 'user.apellido', 'user.usuario', 'user.nacimiento', 
                         'user.genero', 'user.tipo', 'user.estado'
                     )
-                    ->where(function ($query) use ($search, $number) {
-                        return $query->orWhere(DB::raw("CONCAT(user.nombre, ' ',user.apellido)"), 'LIKE', "%".$search."%")
-                            ->orWhere('user.nombre', 'LIKE', '%'.$search.'%')
-                            ->orWhere('user.usuario', 'LIKE', '%'.$search.'%')
-                            ->orWhere('user.apellido', 'LIKE', '%'.$search.'%');
+                    ->where(function ($query) use ($search, $searchlike) {
+                        return $query->orWhere(DB::raw("CONCAT(user.nombre, ' ',user.apellido)"), $searchlike, "%".$search."%")
+                            ->orWhere('user.nombre', $searchlike, '%'.$search.'%')
+                            ->orWhere('user.usuario', $searchlike, '%'.$search.'%')
+                            ->orWhere('user.apellido', $searchlike, '%'.$search.'%');
                     })
                     ->where('user.estado', '=', 'A')
                     ->orderBy('user.id', 'desc')

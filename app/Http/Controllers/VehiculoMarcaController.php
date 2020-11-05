@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Functions;
 use App\Marca;
 use App\Visitas;
 use Carbon\Carbon;
@@ -30,6 +31,9 @@ class VehiculoMarcaController extends Controller
             }
 
             $search = $request->input('search', null);
+
+            $func = new Functions();
+            $searchlike = $func->searchbd();
             
             if ($search == null) {
                 $data = DB::table('marca')
@@ -40,7 +44,7 @@ class VehiculoMarcaController extends Controller
             }else {
                 $data = DB::table('marca')
                     ->select('id', 'descripcion')
-                    ->where('descripcion', 'LIKE', '%'.$search.'%')
+                    ->where('descripcion', $searchlike, '%'.$search.'%')
                     ->where('estado', '=', 'A')
                     ->orderBy('id', 'desc')
                     ->paginate(10);
